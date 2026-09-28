@@ -1,27 +1,22 @@
 ---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About Toolix — Client-Side Utilities</title>
-  <meta name="description" content="About Toolix. Fast, private, zero-upload web tools built for modern browsers." />
-  <link rel="canonical" href="https://toolix.dev/about" />
-</head>
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-  <main class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
-    <h1 class="text-4xl font-bold tracking-tight mb-4">About Toolix</h1>
+<Layout
+  title="About Toolix — Client-Side Utilities"
+  description="About Toolix. Fast, private, zero-upload web tools built for modern browsers."
+  canonical="https://toolix.dev/about"
+>
+  <div class="max-w-3xl py-8">
+    <h1 class="text-4xl font-bold tracking-tight mb-4 font-display">About Toolix</h1>
     <p class="text-xl text-[var(--color-text-secondary)] mb-8">100% free web utilities running entirely within your browser.</p>
 
-    <section class="space-y-6 text-[var(--color-text-secondary)] leading-relaxed text-sm">
-      <h2 class="text-xl font-semibold text-[var(--color-text)]">Our Mission</h2>
+    <div class="space-y-6 text-[var(--color-text-secondary)] leading-relaxed text-sm">
+      <h2 class="text-xl font-semibold text-[var(--color-text)] font-display">Our Mission</h2>
       <p>Toolix was created to provide blazing-fast, privacy-first everyday utilities without forcing users into subscriptions, accounts, or uploading sensitive documents and images to remote servers.</p>
 
-      <h2 class="text-xl font-semibold text-[var(--color-text)]">Client-Side Architecture</h2>
+      <h2 class="text-xl font-semibold text-[var(--color-text)] font-display">Client-Side Architecture</h2>
       <p>By leveraging modern Web standards such as WebAssembly, Web Workers, and the Canvas and Web Audio APIs, all processing happens locally on your device. Once pages are loaded, tools work seamlessly with zero server roundtrips.</p>
-    </section>
-  </main>
-</body>
-</html>
+    </div>
+  </div>
+</Layout>

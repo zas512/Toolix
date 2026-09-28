@@ -1,85 +1,78 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 import UnscramblerTool from '../../components/tools/UnscramblerTool.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Word Unscrambler — Unscramble Letters Online</title>
-  <meta name="description" content="Unscramble letters to find words. Uses a client-side Trie for instant results. Wildcards (?), sorting by length and Scrabble scores. Zero uploads, 100% private." />
-  <link rel="canonical" href="https://toolix.dev/tools/unscrambler" />
-  <meta property="og:title" content="Word Unscrambler — Unscramble Letters Online" />
-  <meta property="og:description" content="Unscramble letters to find words. Uses a client-side Trie for instant results. Wildcards (?), sorting by length and Scrabble scores. Zero uploads, 100% private." />
-</head>
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-  <main>
-    <section class="mx-auto max-w-4xl px-6 py-12 sm:px-12">
-      <h1 class="text-3xl font-bold tracking-tight mb-6">
-        Word Unscrambler
-      </h1>
-      <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
-        Unscramble letters to find all valid words. Uses an in-memory Trie for instant results—no server needed. Supports wildcards (?), sorts by length and Scrabble points. 100% client-side, zero uploads.
+<Layout
+  title="Word Unscrambler — Unscramble Letters Online"
+  description="Unscramble letters to find words. Uses a client-side Trie for instant results. Wildcards (?), sorting by length and Scrabble scores. Zero uploads, 100% private."
+  canonical="https://toolix.dev/tools/unscrambler"
+>
+  <section class="max-w-4xl py-6">
+    <h1 class="text-3xl font-bold tracking-tight mb-4 font-display">
+      Word Unscrambler
+    </h1>
+    <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
+      Unscramble letters to find all valid words. Uses an in-memory Trie for instant results—no server needed. Supports wildcards (?), sorts by length and Scrabble points. 100% client-side, zero uploads.
+    </p>
+
+    {/* Tool Interface */}
+    <div class="bg-[var(--color-bg-alt)] rounded-2xl p-6 sm:p-8 shadow-sm">
+      <UnscramblerTool />
+    </div>
+
+    {/* Editorial Wrapper for SEO/AdSense */}
+    <div class="mt-16 space-y-8 max-w-3xl">
+      <h2 class="text-2xl font-bold font-display">How the Word Unscrambler Works</h2>
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
+        When you enter letters, the tool loads a compressed English word dictionary (~200KB) into your browser's memory.
+        This dictionary is organized as a <strong>Prefix Tree (Trie)</strong> data structure, allowing lightning-fast
+        lookups as you type. Each node represents a letter, and paths from root to leaf nodes spell out valid words.
+      </p>
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
+        As you type, the Trie is traversed to find all words that can be formed from your letters. Wildcards (?)
+        act as placeholders that match any letter. Results are scored using Scrabble point values and sorted by
+        word length (descending) then score (descending) for optimal gameplay utility.
+      </p>
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
+        Everything happens in your browser using a <strong>Web Worker</strong> to keep the main thread free for
+        smooth UI interactions. No data ever leaves your device—your privacy is guaranteed.
       </p>
 
-      {/* Tool Interface */}
-      <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 shadow-sm">
-        <UnscramblerTool />
-      </div>
+      <h3 class="text-xl font-bold font-display pt-4">Features</h3>
+      <ul class="list-disc list-inside space-y-2 text-[var(--color-text-secondary)]">
+        <li>Instant results as you type (Web Worker powered)</li>
+        <li>Wildcard support (? matches any letter)</li>
+        <li>Results sorted by length and Scrabble scores</li>
+        <li>Client-side Trie for O(L) lookup efficiency</li>
+        <li>Zero uploads, 100% private processing</li>
+        <li>Works offline once loaded (PWA)</li>
+      </ul>
 
-      {/* Editorial Wrapper for SEO/AdSense */}
-      <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
-        <h2 class="text-2xl font-bold mb-6">How the Word Unscrambler Works</h2>
-        <p class="mb-4">
-          When you enter letters, the tool loads a compressed English word dictionary (~200KB) into your browser's memory.
-          This dictionary is organized as a <strong>Prefix Tree (Trie)</strong> data structure, allowing lightning-fast
-          lookups as you type. Each node represents a letter, and paths from root to leaf nodes spell out valid words.
-        </p>
-        <p class="mb-4">
-          As you type, the Trie is traversed to find all words that can be formed from your letters. Wildcards (?)
-          act as placeholders that match any letter. Results are scored using Scrabble point values and sorted by
-          word length (descending) then score (descending) for optimal gameplay utility.
-        </p>
-        <p class="mb-4">
-          Everything happens in your browser using a <strong>Web Worker</strong> to keep the main thread free for
-          smooth UI interactions. No data ever leaves your device—your privacy is guaranteed.
-        </p>
-        <h3 class="text-xl font-bold mb-3">Features</h3>
-        <ul class="list-disc list-inside mb-6 space-y-2">
-          <li>Instant results as you type (Web Worker powered)</li>
-          <li>Wildcard support (? matches any letter)</li>
-          <li>Results sorted by length and Scrabble scores</li>
-          <li>Client-side Trie for O(L) lookup efficiency</li>
-          <li>Zero uploads, 100% private processing</li>
-          <li>Works offline once loaded (PWA)</li>
-        </ul>
-        <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
-        <div class="space-y-4">
-          <div class="border-b pb-4">
-            <h4 class="font-medium mb-2">Is my data safe?</h4>
-            <p class="text-[var(--color-text-secondary)]">
-              Yes. All processing happens in your browser. The word dictionary is loaded locally and never
-              transmitted to any server.
-            </p>
-          </div>
-          <div class="border-b pb-4">
-            <h4 class="font-medium mb-2">What dictionaries are used?</h4>
-            <p class="text-[var(--color-text-secondary)]">
-              We use a curated English word list based on official tournament sources (SOWPODS/TWL), filtered
-              for common gameplay and sorted by frequency.
-            </p>
-          </div>
-          <div class="border-b pb-4">
-            <h4 class="font-medium mb-2">Can I use this offline?</h4>
-            <p class="text-[var(--color-text-secondary)]">
-              Yes! Once loaded, the tool works completely offline thanks to service worker caching (PWA).
-              The dictionary and tool assets are stored locally.
-            </p>
-          </div>
+      <h3 class="text-xl font-bold font-display pt-4">Frequently Asked Questions</h3>
+      <div class="space-y-4">
+        <div class="border-b border-[var(--color-border)] pb-4">
+          <h4 class="font-medium mb-1">Is my data safe?</h4>
+          <p class="text-sm text-[var(--color-text-secondary)]">
+            Yes. All processing happens in your browser. The word dictionary is loaded locally and never
+            transmitted to any server.
+          </p>
         </div>
-      </section>
-    </section>
-  </main>
-</body>
-</html>
+        <div class="border-b border-[var(--color-border)] pb-4">
+          <h4 class="font-medium mb-1">What dictionaries are used?</h4>
+          <p class="text-sm text-[var(--color-text-secondary)]">
+            We use a curated English word list based on official tournament sources (SOWPODS/TWL), filtered
+            for common gameplay and sorted by frequency.
+          </p>
+        </div>
+        <div class="border-b border-[var(--color-border)] pb-4">
+          <h4 class="font-medium mb-1">Can I use this offline?</h4>
+          <p class="text-sm text-[var(--color-text-secondary)]">
+            Yes! Once loaded, the tool works completely offline thanks to service worker caching (PWA).
+            The dictionary and tool assets are stored locally.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

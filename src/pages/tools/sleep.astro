@@ -1,82 +1,76 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 import SleepCalculator from '../../components/tools/SleepCalculator.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sleep Cycle Calculator — Optimal Bedtimes & Wake Times</title>
-  <meta name="description" content="Calculate optimal bedtimes and wake times based on 90-minute sleep cycles. Client-side circadian calculator. Zero uploads, 100% private." />
-  <link rel="canonical" href="https://toolix.dev/tools/sleep" />
-  <meta property="og:title" content="Sleep Cycle Calculator — Optimal Bedtimes & Wake Times" />
-  <meta property="og:description" content="Calculate optimal bedtimes and wake times based on 90-minute sleep cycles. Client-side calculator. Zero uploads, 100% private." />
-</head>
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-  <main>
-    <section class="mx-auto max-w-4xl px-6 py-12 sm:px-12">
-      <h1 class="text-3xl font-bold tracking-tight mb-6">
-        Sleep Cycle Calculator
-      </h1>
-      <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
-        Based on 90-minute ultradian sleep rhythms, calculate optimal bedtimes and wake times for
-        feeling refreshed. Adjust sleep latency and track your sleep consistency over time.
+<Layout
+  title="Sleep Cycle Calculator — Optimal Bedtimes & Wake Times"
+  description="Calculate optimal bedtimes and wake times based on 90-minute sleep cycles. Client-side circadian calculator. Zero uploads, 100% private."
+  canonical="https://toolix.dev/tools/sleep"
+>
+  <section class="max-w-4xl py-6">
+    <h1 class="text-3xl font-bold tracking-tight mb-4 font-display">
+      Sleep Cycle Calculator
+    </h1>
+    <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
+      Based on 90-minute ultradian sleep rhythms, calculate optimal bedtimes and wake times for
+      feeling refreshed. Adjust sleep latency and track your sleep consistency over time.
+    </p>
+
+    {/* Tool Interface */}
+    <div class="bg-[var(--color-bg-alt)] rounded-2xl p-6 sm:p-8">
+      <SleepCalculator />
+    </div>
+
+    {/* Editorial Wrapper for SEO/AdSense */}
+    <div class="mt-16 space-y-8 max-w-3xl">
+      <h2 class="text-2xl font-bold font-display">How Sleep Cycles Work</h2>
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
+        Human sleep follows <strong>ultradian rhythms</strong> of approximately 90 minutes per cycle.
+        Each cycle progresses through light sleep, deep sleep, and REM stages. Waking at the end of a
+        cycle (rather than in the middle) leads to feeling more refreshed and less groggy.
+      </p>
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
+        The tool below models these cycles and calculates optimal times based on your target wake time
+        or bedtime, using a <strong>14-minute average sleep latency</strong> window — the time it typically
+        takes to fall asleep after getting into bed.
       </p>
 
-      {/* Tool Interface */}
-      <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10">
-        <SleepCalculator />
-      </div>
-    </section>
-  </main>
+      <h3 class="text-xl font-bold font-display pt-4">Sleep Cycle Basics</h3>
+      <ul class="list-disc list-inside space-y-2 text-[var(--color-text-secondary)]">
+        <li>A full sleep cycle lasts ~90 minutes</li>
+        <li>Typical night includes 4–6 complete cycles</li>
+        <li>Waking at cycle endpoints reduces sleep inertia</li>
+        <li>14-minute sleep latency window accounts for falling asleep</li>
+      </ul>
 
-  {/* Editorial Wrapper for SEO/AdSense */}
-  <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
-    <h2 class="text-2xl font-bold mb-6">How Sleep Cycles Work</h2>
-    <p class="mb-4">
-      Human sleep follows <strong>ultradian rhythms</strong> of approximately 90 minutes per cycle.
-      Each cycle progresses through light sleep, deep sleep, and REM stages. Waking at the end of a
-      cycle (rather than in the middle) leads to feeling more refreshed and less groggy.
-    </p>
-    <p class="mb-4">
-      The tool below models these cycles and calculates optimal times based on your target wake time
-      or bedtime, using a <strong>14-minute average sleep latency</strong> window — the time it typically
-      takes to fall asleep after getting into bed.
-    </p>
-    <h3 class="text-xl font-bold mb-3">Sleep Cycle Basics</h3>
-    <ul class="list-disc list-inside mb-6 space-y-2">
-      <li>A full sleep cycle lasts ~90 minutes</li>
-      <li>Typical night includes 4–6 complete cycles</li>
-      <li>Waking at cycle endpoints reduces sleep inertia</li>
-      <li>14-minute sleep latency window accounts for falling asleep</li>
-    </ul>
-    <h3 class="text-xl font-bold mb-3">Features</h3>
-    <ul class="list-disc list-inside mb-6 space-y-2">
-      <li>Calculate bedtimes for a target wake time</li>
-      <li>Calculate wake times for a target bedtime</li>
-      <li>Adjustable sleep latency (default 14 minutes)</li>
-      <li>Sleep consistency tracking (localStorage)</li>
-      <li>100% client-side, zero uploads</li>
-      <li>Works offline (PWA)</li>
-    </ul>
-    <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
-    <div class="space-y-4">
-      <div class="border-b pb-4">
-        <h4 class="font-medium mb-2">Is my data private?</h4>
-        <p class="text-[var(--color-text-secondary)]">
-          Yes. All calculations happen entirely in your browser. No sleep data is transmitted to any server.
-        </p>
-      </div>
-      <div class="border-b pb-4">
-        <h4 class="font-medium mb-2">Are 90-minute cycles accurate for everyone?</h4>
-        <p class="text-[var(--color-text-secondary)]">
-          While 90 minutes is the average ultradian rhythm, individual cycles may vary. The tool provides
-          optimal estimates — actual feelings may vary based on personal biology, alcohol, caffeine, and
-          other factors.
-        </p>
+      <h3 class="text-xl font-bold font-display pt-4">Features</h3>
+      <ul class="list-disc list-inside space-y-2 text-[var(--color-text-secondary)]">
+        <li>Calculate bedtimes for a target wake time</li>
+        <li>Calculate wake times for a target bedtime</li>
+        <li>Adjustable sleep latency (default 14 minutes)</li>
+        <li>Sleep consistency tracking (localStorage)</li>
+        <li>100% client-side, zero uploads</li>
+        <li>Works offline (PWA)</li>
+      </ul>
+
+      <h3 class="text-xl font-bold font-display pt-4">Frequently Asked Questions</h3>
+      <div class="space-y-4">
+        <div class="border-b border-[var(--color-border)] pb-4">
+          <h4 class="font-medium mb-1">Is my data private?</h4>
+          <p class="text-sm text-[var(--color-text-secondary)]">
+            Yes. All calculations happen entirely in your browser. No sleep data is transmitted to any server.
+          </p>
+        </div>
+        <div class="border-b border-[var(--color-border)] pb-4">
+          <h4 class="font-medium mb-1">Are 90-minute cycles accurate for everyone?</h4>
+          <p class="text-sm text-[var(--color-text-secondary)]">
+            While 90 minutes is the average ultradian rhythm, individual cycles may vary. The tool provides
+            optimal estimates — actual feelings may vary based on personal biology, alcohol, caffeine, and
+            other factors.
+          </p>
+        </div>
       </div>
     </div>
   </section>
-</body>
-</html>
+</Layout>

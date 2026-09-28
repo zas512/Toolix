@@ -1,4 +1,6 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+
 export async function getStaticPaths() {
   return [
     { params: { slug: '5-letter-words' } },
@@ -11,20 +13,15 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 ---
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Word Unscrambler — {slug}</title>
-  <meta name="description" content={`Find words for '${slug}' with our client-side Trie unscrambler. Zero uploads.`} />
-  <link rel="canonical" href={`https://toolix.dev/word-unscrambler/${slug}`} />
-</head>
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-  <main class="mx-auto max-w-3xl px-6 py-12 sm:px-12">
-    <h1 class="text-3xl font-bold tracking-tight mb-4">Unscramble: {slug}</h1>
+
+<Layout
+  title={`Word Unscrambler — ${slug}`}
+  description={`Find words for '${slug}' with our client-side Trie unscrambler. Zero uploads.`}
+  canonical={`https://toolix.dev/word-unscrambler/${slug}`}
+>
+  <div class="max-w-3xl py-8">
+    <h1 class="text-3xl font-bold tracking-tight mb-4 font-display">Unscramble: {slug}</h1>
     <p class="text-lg text-[var(--color-text-secondary)] mb-6">Find words matching the letters in "{slug}" using our client-side Trie search.</p>
-    <a href="/tools/unscrambler" class="text-[var(--color-accent)] hover:underline">Back to Unscrambler →</a>
-  </main>
-</body>
-</html>
+    <a href="/tools/unscrambler" class="text-[var(--color-accent)] font-semibold hover:underline">← Back to Unscrambler</a>
+  </div>
+</Layout>

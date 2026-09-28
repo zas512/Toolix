@@ -1,36 +1,11 @@
 @import "tailwindcss";
 
-/* Space Grotesk for headings — geometric, editorial, not AI-default */
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: local('Space Grotesk'), local('SpaceGrotesk-Regular'),
-    url('/fonts/space-grotesk/SpaceGrotesk-Regular.woff2') format('woff2'),
-    url('/fonts/space-grotesk/SpaceGrotesk-Regular.woff') format('woff');
-}
+@theme {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Fira Code', monospace;
 
-/* DM Sans for body — warm, humanist, readable */
-@font-face {
-  font-family: 'DM Sans';
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: local('DM Sans'), local('DMSans-Regular'),
-    url('/fonts/dm-sans/DMSans-Regular.woff2') format('woff2'),
-    url('/fonts/dm-sans/DMSans-Regular.woff') format('woff');
-}
-
-/* Heading combo: Space Grotesk (geometric, editorial) */
-/* Body combo: DM Sans (humanist, warm) */
-
-@theme inline {
-  --font-family-sans: 'DM Sans', 'DM-Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-family-display: 'Space Grotesk', 'SpaceGrotesk', ui-sans-serif, system-ui, sans-serif;
-  --font-family-mono: 'JetBrains Mono', ui-monospace, 'Fira Code', monospace;
-
-  /* Emerald / Acid Green system — kept from previous request */
+  /* Emerald / Acid Green theme palette */
   --color-bg: #F5F8F0;
   --color-bg-alt: #E7EFE4;
   --color-text: #0A1A08;
@@ -40,14 +15,41 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; font-size: 16px; }
-  body {
-    @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased;
-    transition: background-color 150ms ease-out, color 150ms ease-out;
+  :root {
+    --color-bg: #F5F8F0;
+    --color-bg-alt: #E7EFE4;
+    --color-text: #0A1A08;
+    --color-text-secondary: #3A5A2E;
+    --color-accent: #00E676;
+    --color-border: #C5D5BE;
   }
-  button, [role="button"] { @apply transition-all duration-150 ease-out; }
-  * { -webkit-tap-highlight-color: transparent; }
 
-  /* Editorial heading style — Space Grotesk tight tracking */
-  h1, h2, h3, h4 { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.03em; }
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }

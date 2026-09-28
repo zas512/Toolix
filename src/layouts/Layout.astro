@@ -1,19 +1,38 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import '../styles/index.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'Toolix — 100% Free Online Tools. No Sign-Up.',
+  description = 'Word unscrambler, sleep calculator, PDF utilities, image transcoder, pomodoro timer. All client-side. Zero uploads. No account required.',
+  canonical
+} = Astro.props;
 ---
 <!doctype html>
 <html lang="en" class="scroll-smooth">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {canonical && <link rel="canonical" href={canonical} />}
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-<body class="bg-[#F5F8F0] text-[#1A2E1A] font-[family-name:'DM_Sans'] antialiased transition-colors duration-300">
+<body class="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
   <Header />
-  <main class="mx-auto max-w-6xl px-6 py-8 sm:px-12"><slot /></main>
+  <main class="flex-1 mx-auto w-full max-w-6xl px-6 py-8 sm:px-12">
+    <slot />
+  </main>
   <Footer />
 </body>
 </html>

@@ -1,23 +1,24 @@
 ---
+import Layout from '../layouts/Layout.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Terms — Toolix</title></head>
-<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-  <main class="mx-auto max-w-3xl px-6 py-12 sm:px-12">
-    <h1 class="text-3xl font-bold tracking-tight mb-6">Terms of Service</h1>
-    <section class="space-y-6 text-[var(--color-text-secondary)] leading-relaxed text-sm">
-      <h2 class="text-lg font-semibold text-[var(--color-text)]">Zero-Upload Policy</h2>
+<Layout
+  title="Terms of Service — Toolix"
+  description="Toolix Terms of Service. Zero-upload client-side utilities."
+  canonical="https://toolix.dev/terms"
+>
+  <div class="max-w-3xl py-8">
+    <h1 class="text-3xl font-bold tracking-tight mb-6 font-display">Terms of Service</h1>
+    <div class="space-y-6 text-[var(--color-text-secondary)] leading-relaxed text-sm">
+      <h2 class="text-lg font-semibold text-[var(--color-text)] font-display">Zero-Upload Policy</h2>
       <p>All data processing is performed client-side using browser-native technologies (Web Workers, WebAssembly, Canvas API, Web Audio API). No files, text inputs, or personal data are transmitted to any server.</p>
       <p>When the browser tab is closed or refreshed, all temporary binary ArrayBuffers and file data are purged from memory.</p>
-      <h2 class="text-lg font-semibold text-[var(--color-text)]">No Sign-Up Requirement</h2>
+      <h2 class="text-lg font-semibold text-[var(--color-text)] font-display">No Sign-Up Requirement</h2>
       <p>Toolix requires no user account, email address, or authentication token. All preferences and streak counters are saved locally in IndexedDB or localStorage.</p>
-      <h2 class="text-lg font-semibold text-[var(--color-text)]">Advertising</h2>
+      <h2 class="text-lg font-semibold text-[var(--color-text)] font-display">Advertising</h2>
       <p>Display advertising (AdSense or equivalent) is integrated with zero cumulative layout shift (CLS = 0.00). Ad placeholder containers reserve fixed dimensions, preventing content jumps.</p>
-      <h2 class="text-lg font-semibold text-[var(--color-text)]">Intellectual Property</h2>
+      <h2 class="text-lg font-semibold text-[var(--color-text)] font-display">Intellectual Property</h2>
       <p>All source code is proprietary. The word dictionary is derived from publicly available tournament sources (SOWPODS/TWL) and filtered for common gameplay utility.</p>
-    </section>
-  </main>
-</body>
-</html>
+    </div>
+  </div>
+</Layout>
