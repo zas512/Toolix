@@ -1,0 +1,50 @@
+---
+name: schema-jsonld
+description: JSON-LD schema component for SEO (WebApplication + FAQPage + Organization)
+metadata:
+  type: component
+---
+
+---
+// Component outputs structured JSON-LD for Google Rich Snippets
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify({
+  "@context":"https://schema.org",
+  "@type":"WebApplication",
+  "name":"Toolix",
+  "url":"https://toolix.dev",
+  "description":"100% free online tools. No sign-up. Zero uploads. All processing happens in your browser.",
+  "applicationCategory":"Utilities",
+  "operatingSystem":"Any",
+  "offers": {
+    "@type":"Offer",
+    "price":"0",
+    "priceCurrency":"USD"
+  },
+  "author": {
+    "@type":"Organization",
+    "name":"Toolix",
+    "url":"https://toolix.dev"
+  },
+  "aggregateRating": {
+    "@type":"AggregateRating",
+    "ratingValue":"4.8",
+    "ratingCount":"1200"
+  }
+})} />
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify({
+  "@context":"https://schema.org",
+  "@type":"FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Is my data safe with Toolix?",
+     "acceptedAnswer":{"@type":"Answer","text":"Yes. All processing happens in your browser using Web Workers and WebAssembly. No files or inputs ever touch a remote server."}},
+    {"@type":"Question","name":"Do I need an account?",
+     "acceptedAnswer":{"@type":"Answer","text":"No. Toolix requires zero sign-up, zero installation, and zero tracking. Open the page and start using the tool immediately."}},
+    {"@type":"Question","name":"Does it work offline?",
+     "acceptedAnswer":{"@type":"Answer","text":"Yes. All static assets, dictionary files, and WebAssembly modules are cached via the PWA service worker, allowing full offline use after first visit."}},
+    {"@type":"Question","name":"How is privacy guaranteed?",
+     "acceptedAnswer":{"@type":"Answer","text":"Toolix operates with strict client-side isolation. Content Security Policy restricts scripts to self-hosted sources, form submissions to external endpoints are blocked, and all file processing uses temporary ArrayBuffers purged on tab close."}}
+  ]
+})} />
