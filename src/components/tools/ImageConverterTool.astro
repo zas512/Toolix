@@ -1,8 +1,4 @@
 ---
-name: image-tool
-description: HEIC to JPEG/PNG/WebP converter with batch support
-metadata:
-  type: component
 ---
 
 <div class="space-y-8">
@@ -56,18 +52,18 @@ metadata:
 </div>
 
 <script type="module">
-const dropZone = document.getElementById('drop-zone') as HTMLElement;
-const inputEl = document.getElementById('image-input') as HTMLInputElement;
-const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement;
-const formatSelect = document.getElementById('format-select') as HTMLSelectElement;
-const qualitySelect = document.getElementById('quality-select') as HTMLSelectElement;
-let files: File[] = [];
+const dropZone = document.getElementById('drop-zone') ;
+const inputEl = document.getElementById('image-input') ;
+const convertBtn = document.getElementById('convert-btn') ;
+const formatSelect = document.getElementById('format-select') ;
+const qualitySelect = document.getElementById('quality-select') ;
+let files = [];
 
 function updateConvertBtn() {
   convertBtn.disabled = files.length === 0;
 }
 
-function onFilesSelected(fileList: FileList) {
+function onFilesSelected(fileList) {
   files = Array.from(fileList);
   updateConvertBtn();
 }
@@ -100,8 +96,8 @@ convertBtn.addEventListener('click', async () => {
     originalSize: file.size
   }));
 
-  const resultsDiv = document.getElementById('results') as HTMLDivElement;
-  const resultsList = document.getElementById('results-list') as HTMLDivElement;
+  const resultsDiv = document.getElementById('results') ;
+  const resultsList = document.getElementById('results-list') ;
   resultsList.innerHTML = results.map(r => `
     <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] transition-colors">
       <div>
@@ -120,8 +116,8 @@ convertBtn.addEventListener('click', async () => {
 </script>
 
 <style>
-  .image-tool { @apply space-y-6; }
+  
 
-  #drop-zone { @apply transition-colors duration-150; }
-  #drop-zone:focus { @apply ring-2 ring-[var(--color-accent)] ring-offset-2; }
+  
+  
 </style>
