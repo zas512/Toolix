@@ -1,11 +1,59 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+name: homepage
+description: Persuade mode homepage with asymmetric hierarchy and interactive tool grid
+metadata:
+  type: page
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toolix — 100% Free Online Tools. No Sign-Up.</title>
+  <meta name="description" content="Word unscrambler, sleep calculator, PDF utilities, image transcoder, pomodoro timer. All client-side. Zero uploads. No account required." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
+  <main>
+    <section class="relative mx-auto max-w-7xl px-6 py-16 sm:px-12 sm:py-24 lg:py-32">
+      <div class="max-w-3xl">
+        <h1 class="tracking-tight text-5xl font-bold sm:text-7xl leading-[1.1] mb-6">
+          100% free tools.<br />
+          <span class="text-[var(--color-accent)]">Zero uploads.</span>
+        </h1>
+        <p class="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-10 max-w-2xl">
+          Open a page, drop in your data, get the result instantly. Nothing leaves your browser. No accounts. No tracking.
+        </p>
+        <a href="/tools/unscrambler" class="inline-flex items-center rounded-full bg-[var(--color-accent)] text-white px-8 py-4 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors">
+          Try Unscrambler
+          <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </a>
+      </div>
+
+      <div class="mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6" aria-label="Tool directory">
+        <a href="/tools/unscrambler" class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 hover:border-[var(--color-accent)] transition-all">
+          <h3 class="text-lg font-semibold mb-1">Word Unscrambler</h3>
+          <p class="text-sm text-[var(--color-text-secondary)]">Trie search. Wildcards. Scrabble scores.</p>
+        </a>
+        <a href="/tools/sleep" class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 hover:border-[var(--color-accent)] transition-all">
+          <h3 class="text-lg font-semibold mb-1">Sleep Calculator</h3>
+          <p class="text-sm text-[var(--color-text-secondary)]">90-min cycles. Circadian curves.</p>
+        </a>
+        <a href="/tools/pdf" class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 hover:border-[var(--color-accent)] transition-all">
+          <h3 class="text-lg font-semibold mb-1">PDF Tools</h3>
+          <p class="text-sm text-[var(--color-text-secondary)]">Merge, split, compress client-side.</p>
+        </a>
+        <a href="/tools/image" class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 hover:border-[var(--color-accent)] transition-all">
+          <h3 class="text-lg font-semibold mb-1">HEIC Transcoder</h3>
+          <p class="text-sm text-[var(--color-text-secondary)]">Batch to JPEG/PNG/WebP. WASM.</p>
+        </a>
+        <a href="/tools/pomodoro" class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 hover:border-[var(--color-accent)] transition-all">
+          <h3 class="text-lg font-semibold mb-1">Pomodoro Timer</h3>
+          <p class="text-sm text-[var(--color-text-secondary)]">Worker tick. Web Audio. Streaks.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

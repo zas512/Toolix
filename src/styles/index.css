@@ -1,1 +1,68 @@
 @import "tailwindcss";
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/600.css";
+@import "@fontsource/geist-sans/700.css";
+
+@theme inline {
+  --tw-font-family-sans: "Geist Sans", "Inter", sans-serif;
+  --tw-font-family-mono: "ui-monospace", "monospace";
+
+  /* Light mode (default) */
+  --color-bg: #F8F7F5;
+  --color-bg-alt: #F0EFE9;
+  --color-text: #0F1115;
+  --color-text-secondary: #7A7670;
+  --color-accent: #2563EB;
+  --color-border: #D9D6CE;
+
+  /* Dark mode variables — applied via .dark class */
+  --color-bg-dark: #121214;
+  --color-bg-alt-dark: #1A1A1D;
+  --color-text-dark: #F4F3F0;
+  --color-text-secondary-dark: #9A9690;
+  --color-border-dark: #2E2E35;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans;
+    transition: background-color 150ms ease-out, color 150ms ease-out;
+  }
+
+  .dark body {
+    @apply bg-[var(--color-bg-dark)] text-[var(--color-text-dark)];
+  }
+
+  /* 150ms ease-out for interactive states (Impeccable standard) */
+  button, [role="button"] {
+    transition: background-color 150ms ease-out, color 150ms ease-out,
+      border-color 150ms ease-out, transform 150ms ease-out;
+  }
+
+  /* Prevent unwantedtap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  /* Layout-stable ad placeholder (0 CLS) */
+  .ad-placeholder {
+    @apply bg-slate-100 dark:bg-slate-800 rounded flex items-center justify-center min-h-[90px] sm:min-h-[50px];
+  }
+
+  .ad-placeholder-label {
+    @apply text-xs text-slate-400 uppercase tracking-wider;
+  }
+
+  /* Focus ring — subtle and consistent */
+  .focus-ring {
+    @apply focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)];
+  }
+}
