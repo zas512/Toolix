@@ -1,0 +1,155 @@
+---
+name: pomodoro-timer
+description: Focus timer with web worker tick and web audio
+metadata:
+  type: component
+---
+
+<div class="space-y-8">
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8 text-center">
+    <h2 class="text-lg font-medium text-[var(--color-text)] mb-6">Pomodoro Timer</h2>
+
+    <div class="text-8xl font-mono font-bold text-[var(--color-text)] tracking-tighter leading-none mb-2" id="timer-display" aria-live="polite" aria-atomic="true">
+      25:00
+    </div>
+    <p class="text-sm text-[var(--color-text-secondary)] mb-6">Work session</p>
+
+    <div class="flex flex-wrap justify-center gap-3">
+      <button
+        id="start-btn"
+        type="button"
+        class="rounded-full bg-[var(--color-accent)] text-white px-8 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors"
+      >
+        Start
+      </button>
+      <button
+        id="pause-btn"
+        type="button"
+        class="rounded-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-8 py-3 font-medium hover:bg-[var(--color-bg)] transition-colors"
+        disabled
+      >
+        Pause
+      </button>
+      <button
+        id="reset-btn"
+        type="button"
+        class="rounded-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-8 py-3 font-medium hover:bg-[var(--color-bg)] transition-colors"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  {/* Task Tracker */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium text-[var(--color-text)] mb-4">Session Tracker</h2>
+    <div class="flex gap-2" role="list" aria-label="Task checklist">
+      <input type="checkbox" id="task-1" class="w-5 h-5 rounded border-[var(--color-border)] accent-[var(--color-accent)] mt-1" />
+      <label for="task-1" class="text-sm text-[var(--color-text-secondary)]">Focus session 1 — Completed</label>
+    </div>
+    <div class="flex gap-2 mt-2" role="listitem">
+      <input type="checkbox" id="task-2" class="w-5 h-5 rounded border-[var(--color-border)] accent-[var(--color-accent)] mt-1" />
+      <label for="task-2" class="text-sm text-[var(--color-text-secondary)]">Focus session 2 — Completed</label>
+    </div>
+    <div class="mt-4 pt-4 border-t border-[var(--color-border)] flex justify-between items-center text-sm">
+      <span class="text-[var(--color-text-secondary)]">Today:</span>
+      <span class="font-medium text-[var(--color-text)]">2 / 4 sessions</span>
+    </div>
+    <div class="mt-2 text-xs text-[var(--color-text-secondary)]"></div>
+  </div>
+</div>
+
+<script type="module">
+let timerWorker: Worker | null = null;
+let isRunning = false;
+let seconds = 25 * 60;
+
+const timerDisplay = document.getElementById('timer-display') as HTMLElement;
+const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
+const pauseBtn = document.getElementById('pause-btn') as HTMLButtonElement;
+const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+
+function formatTime(s: number): string {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+function updateDisplay() {
+  timerDisplay.textContent = formatTime(seconds);
+}
+
+function playChime() {
+  try {
+    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch (e) {
+    // Audio not available
+  }
+}
+
+function initWorker() {
+  timerWorker = new Worker(new URL('../../lib/timer-worker.ts', import.meta.url), { type: 'module' });
+  timerWorker.onmessage = (e) => {
+    const { type, payload } = e.data;
+    if (type === 'tick') {
+      seconds = payload.secondsLeft;
+      updateDisplay();
+      if (seconds <= 0) {
+        playChime();
+        isRunning = false;
+        startBtn.textContent = 'Restart';
+        pauseBtn.disabled = true;
+      }
+    }
+  };
+}
+
+startBtn.addEventListener('click', () => {
+  isRunning = true;
+  startBtn.textContent = 'Running';
+  startBtn.setAttribute('aria-busy', 'true');
+  startBtn.disabled = true;
+  pauseBtn.disabled = false;
+
+  if (!timerWorker) initWorker();
+  timerWorker?.postMessage({ type: 'start', payload: { duration: seconds } });
+});
+
+pauseBtn.addEventListener('click', () => {
+  isRunning = false;
+  startBtn.textContent = 'Resume';
+  startBtn.disabled = false;
+  startBtn.removeAttribute('aria-busy');
+  pauseBtn.disabled = true;
+  timerWorker?.postMessage({ type: 'pause' });
+});
+
+resetBtn.addEventListener('click', () => {
+  isRunning = false;
+  seconds = 25 * 60;
+  updateDisplay();
+  startBtn.textContent = 'Start';
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+  timerWorker?.postMessage({ type: 'reset' });
+});
+
+updateDisplay();
+</script>
+
+<style>
+  .pomodoro-tool { @apply space-y-6; }
+  #timer-display { font-variant-numeric: tabular-nums; }
+</style>

@@ -1,0 +1,58 @@
+---
+name: pomodoro-page
+description: Pomodoro timer with web worker tick thread
+metadata:
+  type: page
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pomodoro Timer — Deep Work Focus Clock</title>
+  <meta name="description" content="Deep-work Pomodoro timer with unthrottled Web Worker tick thread. Audio alerts via Web Audio API. Zero uploads." />
+  <link rel="canonical" href="https://toolix.dev/tools/pomodoro" />
+</head>
+<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
+  <main>
+    <section class="mx-auto max-w-4xl px-6 py-12 sm:px-12">
+      <h1 class="text-3xl font-bold tracking-tight mb-6">Pomodoro Timer</h1>
+      <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
+        Deep-work timer that works even when your tab is hidden. Uses a dedicated Web Worker for
+        unthrottled tick intervals and the Web Audio API for alert chimes. Track streaks locally.
+      </p>
+
+      <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10 max-w-xl">
+        <PomodoroTimerTool client:visible />
+      </div>
+    </section>
+  </main>
+
+  <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
+    <h2 class="text-2xl font-bold mb-6">How the Timer Works</h2>
+    <p class="mb-4">Standard JavaScript <code>setInterval</code> functions are throttled by browsers to once per minute when the tab is hidden. For a focus timer, this is unacceptable — you'd miss your interval entirely.</p>
+    <p class="mb-4">Our timer solves this with a <strong>Web Worker tick thread</strong>. The worker runs independently of the main browser tab and is not affected by browser throttling policies. The main thread receives precise tick updates and manages the UI.</p>
+    <p class="mb-4">When your timer completes, the Web Audio API synthesizer generates alert tones — no external audio files required. This keeps the tool lightweight and fully private.</p>
+    <h3 class="text-xl font-bold mb-3">Features</h3>
+    <ul class="list-disc list-inside mb-6 space-y-2">
+      <li>Unthrottled Web Worker tick thread</li>
+      <li>Synthesized Web Audio chimes</li>
+      <li>LocalStorage session tracking and streak counters</li>
+      <li>Works in hidden/background tabs</li>
+      <li>Works offline (PWA)</li>
+    </ul>
+    <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
+    <div class="space-y-4">
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Does it work when I switch tabs?</h4>
+        <p class="text-[var(--color-text-secondary)]">Yes. The Web Worker tick thread continues running independently of tab visibility.</p>
+      </div>
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Can I close the tab?</h4>
+        <p class="text-[var(--color-text-secondary)]">No — closing the tab kills all Web Workers. Use the timer with the page open (even in background).</p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,235 @@
+---
+name: sleep-calculator
+description: Circadian rhythm sleep calculator component
+metadata:
+  type: component
+---
+
+<div class="space-y-8">
+  {/* Input Section */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8 space-y-6">
+    <h2 class="text-lg font-medium text-[var(--color-text)]">Sleep Calculator</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium mb-2 text-[var(--color-text)]" for="wake-time">
+          Target Wake Time
+        </label>
+        <input
+          type="time"
+          id="wake-time"
+          value="07:00"
+          class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] px-4 py-3 focus-ring outline-none"
+          aria-label="Target wake time"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-2 text-[var(--color-text)]" for="sleep-latency">
+          Sleep Latency (min)
+        </label>
+        <select
+          id="sleep-latency"
+          class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] px-4 py-3 focus-ring outline-none"
+          aria-label="Sleep latency in minutes"
+        >
+          <option value="5">5 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="14" selected>14 minutes (average)</option>
+          <option value="20">20 minutes</option>
+          <option value="30">30 minutes</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <button
+        type="button"
+        id="calc-bedtime"
+        class="inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors flex-1 sm:flex-none"
+      >
+        Calculate Bedtimes
+      </button>
+      <button
+        type="button"
+        id="calc-waketime"
+        class="inline-flex items-center justify-center rounded-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-6 py-3 font-medium hover:bg-[var(--color-bg)] transition-colors flex-1 sm:flex-none"
+      >
+        Calculate Wake Times
+      </button>
+    </div>
+  </div>
+
+  {/* Results Section */}
+  <div id="results" class="hidden bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium mb-6 text-[var(--color-text)]">
+      Recommended Times
+    </h2>
+    <div class="space-y-4" id="time-slots">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  {/* Circadian Wave Visualization */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium mb-4 text-[var(--color-text)]">
+      Sleep Cycle Visualization
+    </h2>
+    <div class="overflow-x-auto">
+      <svg id="sleep-wave" viewBox="0 0 800 200" class="w-full max-w-2xl" aria-label="Sleep cycle wave showing light, deep, and REM phases">
+        <!-- Wave path and markers -->
+        <g class="wave-container">
+          <path id="wave-path" d="" fill="none" stroke="var(--color-accent)" stroke-width="2" />
+        </g>
+      </svg>
+    </div>
+    <div class="flex flex-wrap justify-center gap-4 mt-4 text-xs text-[var(--color-text-secondary)]">
+      <span class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 rounded-full bg-[var(--color-accent)] opacity-30"></span>
+        Light Sleep
+      </span>
+      <span class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 rounded-full bg-[var(--color-accent)] opacity-60"></span>
+        Deep Sleep
+      </span>
+      <span class="flex items-center gap-2">
+        <span class="inline-block w-3 h-3 rounded-full bg-[var(--color-accent)]"></span>
+        REM
+      </span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// Sleep cycle constants
+const CYCLE_LENGTH = 90; // minutes
+const LATENCY = 14; // default minutes to fall asleep
+const CYCLES = [4, 4.5, 5, 5.5, 6]; // typical cycle counts
+
+// Parse time helper
+function parseTime(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatTime(minutes: number): string {
+  const h = Math.floor(((minutes % 1440) + 1440) % 1440 / 60);
+  const m = Math.floor(((minutes % 1440) + 1440) % 60);
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
+
+// Calculate bedtimes for a target wake time
+function calcBedtimes(wakeTime: number, latency: number): number[] {
+  const times: number[] = [];
+  for (const cycles of CYCLES) {
+    const totalSleep = cycles * CYCLE_LENGTH;
+    const bedtime = wakeTime - totalSleep - latency;
+    times.push(bedtime);
+  }
+  return times;
+}
+
+// Calculate wake times for a target bedtime
+function calcWakeTimes(bedtime: number, latency: number): number[] {
+  const times: number[] = [];
+  for (const cycles of CYCLES) {
+    const totalSleep = cycles * CYCLE_LENGTH;
+    const wake = bedtime + totalSleep + latency;
+    times.push(wake);
+  }
+  return times;
+}
+
+// Create sleep wave SVG path
+function createWavePath(width: number, height: number): string {
+  const points = [];
+  const amplitude = height * 0.35;
+  const centerY = height / 2;
+  const cycles = 4;
+
+  for (let i = 0; i <= width; i += 2) {
+    const x = i;
+    const cycle = (x / width) * cycles * Math.PI * 2;
+    // Sleep wave: gradual descent, then REM peak
+    const y = centerY + Math.sin(cycle) * amplitude * (0.5 + 0.5 * Math.sin(cycle * 0.5));
+    points.push(`${x},${y}`);
+  }
+  return `M ${points.join(' L ')}`;
+}
+
+// Event handlers
+document.getElementById('calc-bedtime')?.addEventListener('click', () => {
+  const wakeEl = document.getElementById('wake-time') as HTMLInputElement;
+  const latencyEl = document.getElementById('sleep-latency') as HTMLSelectElement;
+  const wakeTime = parseTime(wakeEl.value);
+  const latency = parseInt(latencyEl.value);
+
+  const bedtimes = calcBedtimes(wakeTime, latency);
+  const resultsDiv = document.getElementById('results') as HTMLDivElement;
+  const slots = document.getElementById('time-slots') as HTMLDivElement;
+
+  slots.innerHTML = bedtimes.map((bt, i) => `
+    <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] transition-colors">
+      <div>
+        <p class="text-sm font-medium">${i + 1} Cycle Sleep</p>
+        <p class="text-xs text-[var(--color-text-secondary)]">${Math.round(CYCLES[i])} hours total sleep</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm font-medium">${formatTime(bt)}</p>
+        <p class="text-xs text-[var(--color-accent)]">bedtime</p>
+      </div>
+    </div>
+  `).join('');
+
+  resultsDiv.classList.remove('hidden');
+
+  // Update wave visualization
+  const svg = document.getElementById('sleep-wave') as SVGSVGElement;
+  const path = document.getElementById('wave-path') as SVGPathElement;
+  if (svg && path) {
+    path.setAttribute('d', createWavePath(800, 200));
+  }
+});
+
+document.getElementById('calc-waketime')?.addEventListener('click', () => {
+  const wakeEl = document.getElementById('wake-time') as HTMLInputElement;
+  const bedtime = parseTime(wakeEl.value);
+  const latency = parseInt((document.getElementById('sleep-latency') as HTMLSelectElement).value);
+
+  const wakeTimes = calcWakeTimes(bedtime, latency);
+  const resultsDiv = document.getElementById('results') as HTMLDivElement;
+  const slots = document.getElementById('time-slots') as HTMLDivElement;
+
+  slots.innerHTML = wakeTimes.map((wt, i) => `
+    <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] transition-colors">
+      <div>
+        <p class="text-sm font-medium">Wake Time #${i + 1}</p>
+        <p class="text-xs text-[var(--color-text-secondary)]">${Math.round(CYCLES[i])} hours sleep</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm font-medium">${formatTime(wt)}</p>
+        <p class="text-xs text-[var(--color-accent)]">wake time</p>
+      </div>
+    </div>
+  `).join('');
+
+  resultsDiv.classList.remove('hidden');
+});
+</script>
+
+<style>
+  /* Middle-ground spacing */
+  .sleep-calc {
+    @apply space-y-6;
+  }
+
+  /* Input styling */
+  input[type="time"], select {
+    @apply h-12 px-4 text-base;
+  }
+
+  /* Time slot cards */
+  #time-slots > div {
+    @apply flex items-center justify-between p-3 rounded-lg;
+  }
+</style>

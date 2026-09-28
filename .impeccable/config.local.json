@@ -1,5 +1,4 @@
 {
-  "hook": {
-    "consent": "accepted"
-  }
+  "hook": { "consent": "accepted" },
+  "audit": { "mode": "continuous", "target": "src/" }
 }

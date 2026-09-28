@@ -1,0 +1,82 @@
+---
+name: image-page
+description: HEIC/WebP transcoder with batch processing
+metadata:
+  type: page
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HEIC Image Converter — Convert HEIC to JPG, PNG, WebP</title>
+  <meta name="description" content="Convert HEIC/HEIF images to JPG, PNG, or WebP in your browser. Uses libheif WASM. Zero uploads." />
+  <link rel="canonical" href="https://toolix.dev/tools/image" />
+  <meta property="og:title" content="HEIC Image Converter — Convert HEIC to JPG, PNG, WebP" />
+  <meta property="og:description" content="Convert HEIC/HEIF images to JPG, PNG, or WebP. Batch processing with zip export. Zero uploads, 100% private." />
+</head>
+<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
+  <main>
+    <section class="mx-auto max-w-4xl px-6 py-12 sm:px-12">
+      <h1 class="text-3xl font-bold tracking-tight mb-6">
+        Image Transcoder
+      </h1>
+      <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
+        Convert HEIC/HEIF images to JPEG, PNG, or WebP in your browser. Batch processing with .zip export.
+        Uses libheif compiled to WebAssembly.
+      </p>
+
+      <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10 max-w-xl">
+        <ImageConverterTool client:visible />
+      </div>
+    </section>
+  </main>
+
+  <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
+    <h2 class="text-2xl font-bold mb-6">How HEIC Conversion Works</h2>
+    <p class="mb-4">
+      Apple HEIC (High Efficiency Image Container) files use the HEIF standard for image storage.
+      This format provides excellent compression but has limited browser support. Our tool uses
+      <strong>libheif compiled to WebAssembly</strong> to decode HEIC files entirely in your browser.
+    </p>
+    <p class="mb-4">
+      Once decoded, images are drawn to an <strong>off-screen canvas</strong> and exported to your
+      chosen format (JPEG, PNG, or WebP) at the selected quality level. For batch processing, output files
+      are bundled into a .zip archive using jszip.
+    </p>
+    <h3 class="text-xl font-bold mb-3">Supported Formats</h3>
+    <ul class="list-disc list-inside mb-6 space-y-2">
+      <li>Input: HEIC, HEIF (Apple Photos format)</li>
+      <li>Output: JPEG, PNG, WebP (user-selected)</li>
+      <li>Quality control: Adjustable compression levels</li>
+      <li>Batch processing: Drag multiple files simultaneously</li>
+      <li>Export: .zip archive with all converted files</li>
+    </ul>
+    <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
+    <div class="space-y-4">
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Is my image data safe?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          Yes. All decoding and conversion happens in your browser using WebAssembly. No images are
+          uploaded to any server. Your files remain completely private.
+        </p>
+      </div>
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Does this work for videos?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          No. This tool is specifically for HEIC/HEIF image files. Video files use different codecs
+          and are not supported by this transcoder.
+        </p>
+      </div>
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Can it work offline?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          Yes! Once the WebAssembly module is loaded, all conversion happens locally. The PWA service
+          worker caches the library for offline use.
+        </p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

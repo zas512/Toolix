@@ -1,0 +1,79 @@
+---
+name: pdf-page
+description: PDF utility suite - merge, split, compress
+metadata:
+  type: page
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PDF Tools — Merge, Split, Compress</title>
+  <meta name="description" content="Merge, split, and compress PDF files entirely in your browser. Client-side PDF utility with zero uploads." />
+  <link rel="canonical" href="https://toolix.dev/tools/pdf" />
+  <meta property="og:title" content="PDF Tools — Merge, Split, Compress" />
+  <meta property="og:description" content="Merge, split, and compress PDF files entirely in your browser. Zero uploads, 100% private." />
+</head>
+<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
+  <main>
+    <section class="mx-auto max-w-4xl px-6 py-12 sm:px-12">
+      <h1 class="text-3xl font-bold tracking-tight mb-6">
+        PDF Tools
+      </h1>
+      <p class="text-lg text-[var(--color-text-secondary)] mb-8 max-w-2xl">
+        Merge, split, and compress PDF files entirely in your browser. All processing happens locally using
+        pdf-lib and pdf.js — no files ever leave your device.
+      </p>
+
+      {/* Tool Interface */}
+      <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10 max-w-xl">
+        <PdfUtilityTool client:visible />
+      </div>
+    </section>
+  </main>
+
+  {/* Editorial Wrapper for SEO/AdSense */}
+  <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
+    <h2 class="text-2xl font-bold mb-6">PDF Processing Privacy</h2>
+    <p class="mb-4">
+      Unlike online PDF services that process your documents on remote servers, Toolix performs all PDF
+      operations entirely within your browser. This means:
+    </p>
+    <ul class="list-disc list-inside mb-6 space-y-2">
+      <li>Your documents never touch a server</li>
+      <li>No file size limits from upload restrictions</li>
+      <li>Zero privacy risk for sensitive documents</li>
+      <li>Works offline once assets are loaded</li>
+    </ul>
+    <h3 class="text-xl font-bold mb-3">Supported Operations</h3>
+    <ul class="list-disc list-inside mb-6 space-y-2">
+      <li><strong>Merge:</strong> Combine multiple PDFs into one document</li>
+      <li><strong>Split:</strong> Extract specific pages from a PDF</li>
+      <li><strong>Compress:</strong> Reduce PDF size by downsampling images and stripping metadata</li>
+    </ul>
+    <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
+    <div class="space-y-4">
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Can I process password-protected PDFs?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          No. Password-protected PDFs require server-side decryption for security reasons. Our client-only
+          architecture prevents this for user privacy protection.
+      </div>
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">What's the maximum file size?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          File size is limited by your device's memory. For typical documents (5-20 pages), processing
+          is instantaneous. Larger files may take longer but remain private.
+      </div>
+      <div class="border-b pb-4">
+        <h4 class="font-medium mb-2">Does it work offline?</h4>
+        <p class="text-[var(--color-text-secondary)]">
+          Yes! Once the PDF library assets are loaded, all operations work completely offline thanks to
+          PWA service worker caching.
+      </div>
+    </div>
+  </section>
+</body>
+</html>

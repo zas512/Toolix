@@ -1,0 +1,221 @@
+---
+name: unscrambler-tool
+description: Interactive word unscrambler component with Web Worker
+metadata:
+  type: component
+---
+
+<div class="space-y-8">
+  {/* Input Area */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium mb-4 text-[var(--color-text)]">Enter Letters</h2>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Your letters</label>
+        <input
+          type="text"
+          id="letters-input"
+          placeholder="e.g., t, r, a, i"
+          class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] px-4 py-3 text-lg focus-ring outline-none transition-colors"
+          aria-label="Enter letters to unscramble"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Wildcards (?)</label>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            class="inline-flex items-center rounded bg-[var(--color-accent)]/10 px-3 py-1.5 text-sm text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 focus-ring"
+            aria-pressed="false"
+          >
+            Enable 1 wildcard
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center rounded bg-[var(--color-accent)]/10 px-3 py-1.5 text-sm text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 focus-ring"
+            aria-pressed="false"
+          >
+            Enable 2 wildcards
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {/* Action Buttons */}
+    <div class="mt-6 pt-6 border-t border-[var(--color-border)]">
+      <button
+        id="search-btn"
+        type="button"
+        class="inline-flex items-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors"
+        disabled=true
+        aria-busy=false
+        data-state="ready"
+      >
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+        </svg>
+        Search
+      </button>
+    </div>
+  </div>
+
+  {/* Results Area */}
+  <div id="results" class="hidden bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium mb-4 text-[var(--color-text)]">Results</h2>
+    <p class="text-sm text-[var(--color-text-secondary)] mb-4">
+      Found <span id="result-count">0</span> valid word(s)
+    </p>
+
+    <div class="space-y-3 max-h-96 overflow-y-auto">
+      <div id="results-list">
+        <!-- Results populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  {/* Scoring Area */}
+  <div id="scoring" class="hidden bg-[var(--color-bg)] rounded-xl p-6 sm:p-8 mt-6">
+    <h2 class="text-lg font-medium mb-4 text-[var(--color-text)]">Scrabble Scores</h2>
+    <p class="text-sm text-[var(--color-text-secondary)] mb-4">Sorted by <span id="sort-by">length</span>, then score</p>
+    <div class="space-y-2 max-h-48 overflow-y-auto">
+      <div id="scoring-list">
+        <!-- Scores populated by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// Import the Web Worker handler
+import { createUnscramblerWorker } from '../lib/unscrambler-trie.ts';
+
+// Create worker
+const worker = new Worker(new URL('../lib/unscrambler-worker.ts', import.meta.url), {
+  type: 'module'
+});
+
+// Initialize
+let wildcardCount = 0;
+const lettersInput = document.getElementById('letters-input') as HTMLInputElement;
+const searchBtn = document.getElementById('search-btn') as HTMLButtonElement;
+const resultsDiv = document.getElementById('results') as HTMLDivElement;
+const resultsList = document.getElementById('results-list') as HTMLDivElement;
+const scoringDiv = document.getElementById('scoring') as HTMLDivElement;
+const scoringList = document.getElementById('scoring-list') as HTMLDivElement;
+const resultCount = document.getElementById('result-count') as HTMLSpanElement;
+const sortBy = document.getElementById('sort-by') as HTMLSpanElement;
+
+// Listen for worker messages
+worker.onmessage = (e: MessageEvent) => {
+  const { type, payload } = e.data;
+
+  if (type === 'ready') {
+    // Worker initialized with dictionary
+    searchBtn.disabled = false;
+    searchBtn.setAttribute('data-state', 'ready');
+    searchBtn.removeAttribute('aria-busy');
+  }
+
+  if (type === 'results') {
+    const scoredResults = payload;
+    resultCount.textContent = scoredResults.length.toString();
+    sortBy.textContent = 'length';
+
+    // Build results list
+    resultsList.innerHTML = scoredResults.map((r: { word: string; score: number }) => `
+      <div class="flex items-center justify-between px-3 py-2 rounded hover:bg-[var(--color-bg-alt)] transition-colors">
+        <span class="text-sm font-medium text-[var(--color-text)]">${r.word}</span>
+        <span class="text-xs text-[var(--color-accent)]">${r.score}</span>
+      </div>
+    `).join('');
+
+    resultsDiv.classList.remove('hidden');
+    scoringDiv.classList.remove('hidden');
+  }
+
+  if (type === 'error') {
+    console.error('Worker error:', payload);
+    resultsDiv.classList.add('hidden');
+    scoringDiv.classList.add('hidden');
+  }
+};
+
+// Search handler
+async function handleSearch() {
+  const letters = lettersInput.value.trim();
+  if (!letters) return;
+
+  // Count wildcards in input (letters + ? markers)
+  const wildcardMatches = letters.match(/\?/g) || [];
+  wildcardCount = wildcardMatches.length;
+  const cleanLetters = letters.replace(/\?/g, '').replace(/[^a-zA-Z]/g, '');
+
+  searchBtn.disabled = true;
+  searchBtn.setAttribute('data-state', 'busy');
+  searchBtn.setAttribute('aria-busy', 'true');
+
+  // Send to worker
+  worker.postMessage({
+    type: 'search',
+    payload: {
+      letters: cleanLetters,
+      wildcards: wildcardCount,
+      sortBy: 'length'
+    }
+  });
+}
+
+// Event listeners
+lettersInput.addEventListener('input', (e) => {
+  const val = (e.target as HTMLInputElement).value;
+  searchBtn.disabled = val.length === 0;
+});
+
+searchBtn.addEventListener('click', handleSearch);
+
+// Initialize worker on load
+worker.postMessage({ type: 'init', payload: { dictionary: [] } });
+
+// Provide global function for inline scoring (fallback)
+window.scoreWord = (word: string) => {
+  let score = 0;
+  const scrabble: Record<string, number> = {
+    a: 1, b: 3, c: 3, d: 2, e: 1, f: 4, g: 2, h: 4, i: 1,
+    j: 8, k: 5, l: 1, m: 3, n: 1, o: 1, p: 3, q: 10, r: 1,
+    s: 1, t: 1, u: 1, v: 4, w: 4, x: 8, y: 4, z: 10,
+  };
+  for (const c of word.toLowerCase()) {
+    score += scrabble[c] || 0;
+  }
+  return score;
+};
+</script>
+
+<style>
+  /* Middle-ground spacing — not too compact, not too spacious */
+  .unscrambler-tool {
+    @apply space-y-6;
+  }
+
+  /* Input styling — balanced touch target */
+  input[type="text"] {
+    @apply h-12 px-4 text-base;
+  }
+
+  /* Buttons */
+  button {
+    @apply transition-all duration-150;
+  }
+
+  /* Results list */
+  .results-list > div {
+    @apply flex items-center justify-between px-3 py-1.5 rounded hover:bg-[var(--color-bg-alt)] transition-colors text-sm;
+  }
+
+  /* Scoring list */
+  .scoring-list > div {
+    @apply flex items-center justify-between px-3 py-1.5 rounded hover:bg-[var(--color-bg-alt)] transition-colors text-xs;
+  }
+</style>

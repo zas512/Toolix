@@ -1,0 +1,255 @@
+---
+name: pdf-utility-tool
+description: PDF merge, split, compress component with Web Worker
+metadata:
+  type: component
+---
+
+<div class="space-y-8">
+  {/* Header */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8 space-y-4">
+    <h2 class="text-lg font-medium text-[var(--color-text)]">PDF Tools</h2>
+    <p class="text-sm text-[var(--color-text-secondary)]">
+      100% client-side processing • No uploads • Zero privacy risk
+    </p>
+  </div>
+
+  {/* Tabs for operations */}
+  <div class="bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <div class="flex border-b border-[var(--color-border)]">
+      <button
+        type="button"
+        id="tab-merge"
+        class="flex-1 px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] border-b-2 border-transparent hover:border-[var(--color-accent)] transition-colors"
+        aria-selected="true"
+        data-tab="merge"
+      >
+        Merge PDFs
+      </button>
+      <button
+        type="button"
+        id="tab-split"
+        class="flex-1 px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] border-b-2 border-transparent hover:border-[var(--color-accent)] transition-colors"
+        aria-selected="false"
+        data-tab="split"
+      >
+        Split PDF
+      </button>
+      <button
+        type="button"
+        id="tab-compress"
+        class="flex-1 px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] border-b-2 border-transparent hover:border-[var(--color-accent)] transition-colors"
+        aria-selected="false"
+        data-tab="compress"
+      >
+        Compress PDF
+      </button>
+    </div>
+
+    {/* Tab panels */}
+    <div class="pt-6">
+      <div id="tab-merge-panel" class="space-y-4">
+        <MergePdfForm client:visible />
+      </div>
+      <div id="tab-split-panel" class="hidden space-y-4">
+        <SplitPdfForm client:visible />
+      </div>
+      <div id="tab-compress-panel" class="hidden space-y-4">
+        <CompressPdfForm client:visible />
+      </div>
+    </div>
+  </div>
+
+  {/* Results area */}
+  <div id="results" class="hidden bg-[var(--color-bg)] rounded-xl p-6 sm:p-8">
+    <h2 class="text-lg font-medium mb-4 text-[var(--color-text)]">Results</h2>
+    <div id="result-content">
+      <!-- Populated by JS -->
+    </div>
+    <div class="mt-4">
+      <button
+        id="download-btn"
+        type="button"
+        class="inline-flex items-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors"
+        disabled
+      >
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M5 10l5 5m0 0l5-5m-5 5V3a9 9 0 0118 0v5"/>
+        </svg>
+        Download
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createPdfWorker } from '../../lib/pdf-worker.ts';
+
+let worker = null;
+let currentTab = 'merge';
+const mergePanel = document.getElementById('tab-merge-panel');
+const splitPanel = document.getElementById('tab-split-panel');
+const compressPanel = document.getElementById('tab-compress-panel');
+const mergeBtn = document.getElementById('tab-merge');
+const splitBtn = document.getElementById('tab-split');
+const compressBtn = document.getElementById('tab-compress');
+const resultsDiv = document.getElementById('results');
+const resultContent = document.getElementById('result-content');
+const downloadBtn = document.getElementById('download-btn');
+
+// Initialize worker
+function initWorker() {
+  if (!worker) {
+    worker = new Worker(new URL('../../lib/pdf-worker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = handleWorkerMessage;
+  }
+}
+
+// Handle worker responses
+function handleWorkerMessage(e) {
+  const { type, payload } = e.data;
+
+  if (type === 'ready') {
+    // Worker is ready
+  }
+
+  if (type === 'result') {
+    const blob = new Blob([payload.data], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    resultContent.innerHTML = `
+      <div class="space-y-4">
+        <p class="text-sm text-[var(--color-text)]">
+          PDF processed successfully! Size: ${(payload.size / 1024).toFixed(1)} KB
+        </p>
+        <a href="${url}" download="processed.pdf"
+           class="inline-flex items-center px-4 py-2 bg-[var(--color-bg-alt)] rounded hover:bg-[var(--color-border)] transition-colors text-sm">
+          <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 15h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2z"/>
+          </svg>
+          View PDF
+        </a>
+        <button
+          id="download-btn-actual"
+          type="button"
+          class="inline-flex items-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors mt-2"
+          download="processed.pdf"
+        >
+          <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M5 10l5 5m0 0l5-5m-5 5V3a9 9 0 0118 0v5"/>
+          </svg>
+          Download PDF
+        </button>
+      </div>
+    `;
+
+    // Actually set up the download link
+    const downloadLink = resultContent.querySelector('a[download="processed.pdf"]');
+    if (downloadLink) {
+      downloadLink.href = url;
+    }
+
+    const actualDownloadBtn = resultContent.querySelector('#download-btn-actual');
+    if (actualDownloadBtn) {
+      actualDownloadBtn.onclick = () => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'processed.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+    }
+
+    resultsDiv.classList.remove('hidden');
+    downloadBtn.disabled = true;
+  }
+
+  if (type === 'error') {
+    resultContent.innerHTML = `
+      <div class="bg-red-50 border-l-4 border-red-200 p-4">
+        <p class="text-sm text-red-600 font-medium">Error:</p>
+        <p class="text-sm text-red-500">${payload.message}</p>
+      </div>
+    `;
+    resultsDiv.classList.remove('hidden');
+    downloadBtn.disabled = true;
+  }
+}
+
+// Tab switching
+mergeBtn.addEventListener('click', () => {
+  currentTab = 'merge';
+  mergeBtn.setAttribute('aria-selected', 'true');
+  splitBtn.setAttribute('aria-selected', 'false');
+  compressBtn.setAttribute('aria-selected', 'false');
+  mergeBtn.classList.add('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  mergeBtn.classList.remove('text-[var(--color-text-secondary)]', 'border-transparent');
+  splitBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  splitBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+  compressBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  compressBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+
+  mergePanel.classList.remove('hidden');
+  splitPanel.classList.add('hidden');
+  compressPanel.classList.add('hidden');
+});
+
+splitBtn.addEventListener('click', () => {
+  currentTab = 'split';
+  mergeBtn.setAttribute('aria-selected', 'false');
+  splitBtn.setAttribute('aria-selected', 'true');
+  compressBtn.setAttribute('aria-selected', 'false');
+  mergeBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  mergeBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+  splitBtn.classList.add('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  splitBtn.classList.remove('text-[var(--color-text-secondary)]', 'border-transparent');
+  compressBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  compressBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+
+  mergePanel.classList.add('hidden');
+  splitPanel.classList.remove('hidden');
+  compressPanel.classList.add('hidden');
+});
+
+compressBtn.addEventListener('click', () => {
+  currentTab = 'compress';
+  mergeBtn.setAttribute('aria-selected', 'false');
+  splitBtn.setAttribute('aria-selected', 'false');
+  compressBtn.setAttribute('aria-selected', 'true');
+  mergeBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  mergeBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+  splitBtn.classList.remove('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  splitBtn.classList.add('text-[var(--color-text-secondary)]', 'border-transparent');
+  compressBtn.classList.add('border-[var(--color-accent)]', 'text-[var(--color-text)]');
+  compressBtn.classList.remove('text-[var(--color-text-secondary)]', 'border-transparent');
+
+  mergePanel.classList.add('hidden');
+  splitPanel.classList.add('hidden');
+  compressPanel.classList.remove('hidden');
+});
+
+// Initialize on load
+initWorker();
+</script>
+
+<style>
+  /* Professional, middle-ground spacing */
+  .pdf-utility-tool {
+    @apply space-y-6;
+  }
+
+  /* Tab button styling */
+  button[aria-selected="true"] {
+    @apply border-b-2 border-[var(--color-accent)] text-[var(--color-text)] font-semibold;
+  }
+
+  button[aria-selected="false"] {
+    @apply border-b-2 border-transparent text-[var(--color-text-secondary)];
+  }
+
+  /* Input styling */
+  input[type="file"], input[type="range"] {
+    @apply w-full px-4 py-3;
+  }
+</style>
