@@ -1,4 +1,10 @@
-# Astro Starter Kit: Basics
+# Toolix — Client-Side Utility Suite
+
+Deploy: `vercel.json` included. Connect repo to Vercel → builds with Astro preset automatically.
+
+```sh
+npm install && npm run build
+```
 
 ```sh
 npm create astro@latest -- --template basics
