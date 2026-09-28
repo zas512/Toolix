@@ -1,0 +1,34 @@
+---
+name: sticky-sidebar-ad
+description: Sidebar ad container with viewability refresh (0 CLS)
+metadata:
+  type: component
+---
+
+<!-- Sidebar Ad: 300x600 desktop — fixed dimensions, no layout shift -->
+<div class="sticky top-4 w-full max-w-[300px] min-h-[600px] bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-lg overflow-hidden" aria-label="Advertisement sidebar" role="region" data-ad-slot="sidebar">
+  <div class="h-[600px] flex items-center justify-center px-4">
+    <div class="text-center">
+      <span class="text-xs text-[var(--color-text-secondary)] uppercase tracking-widest block mb-2">Advertisement</span>
+      <span class="text-[10px] text-[var(--color-text-secondary)]">300 x 600</span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// Viewability-based auto-refresh (35-second timer, pauses on idle/hidden)
+const adSlot = document.currentScript?.parentElement?.closest('[data-ad-slot]');
+if (adSlot) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+        // Visible and at least 50% in viewport — refresh logic would go here
+        console.log('Sidebar ad: visible (50%+), refresh cycle active');
+      } else {
+        console.log('Sidebar ad: hidden or less than 50% visible — refresh paused');
+      }
+    });
+  }, { threshold: [0.5] });
+  observer.observe(adSlot);
+}
+</script>

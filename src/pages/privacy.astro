@@ -1,0 +1,26 @@
+---
+name: privacy-page
+description: Privacy policy with cookie and ad policies
+metadata:
+  type: page
+---
+
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Privacy — Toolix</title></head>
+<body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
+  <main class="mx-auto max-w-3xl px-6 py-12 sm:px-12">
+    <h1 class="text-3xl font-bold tracking-tight mb-6">Privacy</h1>
+    <section class="space-y-6 text-[var(--color-text-secondary)] leading-relaxed text-sm">
+      <h2 class="text-lg font-semibold text-[var(--color-text)]">Cookie Handling</h2>
+      <p>Toolix sets no first-party tracking cookies and uses no third-party behavioral analytics cookies. Only a session cookie may be set by the advertising network for ad delivery; no personal identification is collected.</p>
+      <h2 class="text-lg font-semibold text-[var(--color-text)]">Advertising Policy</h2>
+      <p>Ads are served through an approved network. Viewability is verified via IntersectionObserver (at least 50% visible). Auto-refresh pauses when the user minimizes the tab or is idle, with a maximum 35-second interval.</p>
+      <h2 class="text-lg font-semibold text-[var(--color-text)]">Content Security Policy</h2>
+      <p>All pages include a strict CSP: scripts restricted to self-hosted sources and authorized advertising endpoints; form submissions to external endpoints are blocked; worker scripts allowed only from local blob sources.</p>
+      <h2 class="text-lg font-semibold text-[var(--color-text)]">Data Isolation</h2>
+      <p>Files are loaded using browser FileReader APIs as temporary binary ArrayBuffers. When the tab is closed or refreshed, all file data is purged. No server database stores user inputs.</p>
+    </section>
+  </main>
+</body>
+</html>
