@@ -1,8 +1,5 @@
 ---
-name: pomodoro-timer
-description: Focus timer with web worker tick and web audio
-metadata:
-  type: component
+// Focus timer with web worker tick and web audio
 ---
 
 <div class="space-y-8">
@@ -45,31 +42,30 @@ metadata:
     <h2 class="text-lg font-medium text-[var(--color-text)] mb-4">Session Tracker</h2>
     <div class="flex gap-2" role="list" aria-label="Task checklist">
       <input type="checkbox" id="task-1" class="w-5 h-5 rounded border-[var(--color-border)] accent-[var(--color-accent)] mt-1" />
-      <label for="task-1" class="text-sm text-[var(--color-text-secondary)]">Focus session 1 — Completed</label>
+      <label for="task-1" class="text-sm text-[var(--color-text-secondary)]">Focus session 1</label>
     </div>
     <div class="flex gap-2 mt-2" role="listitem">
       <input type="checkbox" id="task-2" class="w-5 h-5 rounded border-[var(--color-border)] accent-[var(--color-accent)] mt-1" />
-      <label for="task-2" class="text-sm text-[var(--color-text-secondary)]">Focus session 2 — Completed</label>
+      <label for="task-2" class="text-sm text-[var(--color-text-secondary)]">Focus session 2</label>
     </div>
     <div class="mt-4 pt-4 border-t border-[var(--color-border)] flex justify-between items-center text-sm">
       <span class="text-[var(--color-text-secondary)]">Today:</span>
-      <span class="font-medium text-[var(--color-text)]">2 / 4 sessions</span>
+      <span class="font-medium text-[var(--color-text)]">0 / 4 sessions</span>
     </div>
-    <div class="mt-2 text-xs text-[var(--color-text-secondary)]"></div>
   </div>
 </div>
 
 <script type="module">
-let timerWorker: Worker | null = null;
+let timerWorker = null;
 let isRunning = false;
 let seconds = 25 * 60;
 
-const timerDisplay = document.getElementById('timer-display') as HTMLElement;
-const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
-const pauseBtn = document.getElementById('pause-btn') as HTMLButtonElement;
-const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+const timerDisplay = document.getElementById('timer-display');
+const startBtn = document.getElementById('start-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const resetBtn = document.getElementById('reset-btn');
 
-function formatTime(s: number): string {
+function formatTime(s) {
   const m = Math.floor(s / 60);
   const sec = s % 60;
   return `${m}:${sec.toString().padStart(2, '0')}`;
@@ -81,7 +77,7 @@ function updateDisplay() {
 
 function playChime() {
   try {
-    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
@@ -116,7 +112,7 @@ function initWorker() {
   };
 }
 
-startBtn.addEventListener('click', () => {
+startBtn?.addEventListener('click', () => {
   isRunning = true;
   startBtn.textContent = 'Running';
   startBtn.setAttribute('aria-busy', 'true');
@@ -127,7 +123,7 @@ startBtn.addEventListener('click', () => {
   timerWorker?.postMessage({ type: 'start', payload: { duration: seconds } });
 });
 
-pauseBtn.addEventListener('click', () => {
+pauseBtn?.addEventListener('click', () => {
   isRunning = false;
   startBtn.textContent = 'Resume';
   startBtn.disabled = false;
@@ -136,7 +132,7 @@ pauseBtn.addEventListener('click', () => {
   timerWorker?.postMessage({ type: 'pause' });
 });
 
-resetBtn.addEventListener('click', () => {
+resetBtn?.addEventListener('click', () => {
   isRunning = false;
   seconds = 25 * 60;
   updateDisplay();
@@ -150,6 +146,5 @@ updateDisplay();
 </script>
 
 <style>
-  .pomodoro-tool { @apply space-y-6; }
   #timer-display { font-variant-numeric: tabular-nums; }
 </style>

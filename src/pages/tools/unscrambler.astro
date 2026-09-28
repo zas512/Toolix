@@ -1,7 +1,5 @@
 ---
-description: "Word unscrambler tool page with editor wrapper"
-metadata:
-  type: page
+import UnscramblerTool from '../../components/tools/UnscramblerTool.astro';
 ---
 
 <!doctype html>
@@ -25,12 +23,12 @@ metadata:
         Unscramble letters to find all valid words. Uses an in-memory Trie for instant results—no server needed. Supports wildcards (?), sorts by length and Scrabble points. 100% client-side, zero uploads.
       </p>
 
-      <!-- Tool Interface -->
+      {/* Tool Interface */}
       <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 shadow-sm">
-        <UnscramblerTool client:visible />
+        <UnscramblerTool />
       </div>
 
-      <!-- Editorial Wrapper for SEO/AdSense -->
+      {/* Editorial Wrapper for SEO/AdSense */}
       <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
         <h2 class="text-2xl font-bold mb-6">How the Word Unscrambler Works</h2>
         <p class="mb-4">
@@ -83,57 +81,5 @@ metadata:
       </section>
     </section>
   </main>
-
-  <!-- Editorial Wrapper for SEO/AdSense -->
-  <section class="mx-auto max-w-3xl px-6 py-16 sm:px-12">
-    <h2 class="text-2xl font-bold mb-6">How the Word Unscrambler Works</h2>
-    <p class="mb-4">
-      When you enter letters, the tool loads a compressed English word dictionary (~200KB) into your browser's memory.
-      This dictionary is organized as a <strong>Prefix Tree (Trie)</strong> data structure, allowing lightning-fast
-      lookups as you type. Each node represents a letter, and paths from root to leaf nodes spell out valid words.
-    </p>
-    <p class="mb-4">
-      As you type, the Trie is traversed to find all words that can be formed from your letters. Wildcards (?)
-      act as placeholders that match any letter. Results are scored using Scrabble point values and sorted by
-      word length (descending) then score (descending) for optimal gameplay utility.
-    </p>
-    <p class="mb-4">
-      Everything happens in your browser using a <strong>Web Worker</strong> to keep the main thread free for
-      smooth UI interactions. No data ever leaves your device—your privacy is guaranteed.
-    </p>
-    <h3 class="text-xl font-bold mb-3">Features</h3>
-    <ul class="list-disc list-inside mb-6 space-y-2">
-      <li>Instant results as you type (Web Worker powered)</li>
-      <li>Wildcard support (? matches any letter)</li>
-      <li>Results sorted by length and Scrabble scores</li>
-      <li>Client-side Trie for O(L) lookup efficiency</li>
-      <li>Zero uploads, 100% private processing</li>
-      <li>Works offline once loaded (PWA)</li>
-    </ul>
-    <h3 class="text-xl font-bold mb-3">Frequently Asked Questions</h3>
-    <div class="space-y-4">
-      <div class="border-b pb-4">
-        <h4 class="font-medium mb-2">Is my data safe?</h4>
-        <p class="text-[var(--color-text-secondary)]">
-          Yes. All processing happens in your browser. The word dictionary is loaded locally and never
-          transmitted to any server.
-        </p>
-      </div>
-      <div class="border-b pb-4">
-        <h4 class="font-medium mb-2">What dictionaries are used?</h4>
-        <p class="text-[var(--color-text-secondary)]">
-          We use a curated English word list based on official tournament sources (SOWPODS/TWL), filtered
-          for common gameplay and sorted by frequency.
-        </p>
-      </div>
-      <div class="border-b pb-4">
-        <h4 class="font-medium mb-2">Can I use this offline?</h4>
-        <p class="text-[var(--color-text-secondary)]">
-          Yes! Once loaded, the tool works completely offline thanks to service worker caching (PWA).
-          The dictionary and tool assets are stored locally.
-        </p>
-      </div>
-    </div>
-  </section>
 </body>
 </html>

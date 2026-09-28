@@ -1,8 +1,5 @@
 ---
-name: unscrambler-tool
-description: Interactive word unscrambler component with Web Worker
-metadata:
-  type: component
+// Interactive word unscrambler component
 ---
 
 <div class="space-y-8">
@@ -12,7 +9,7 @@ metadata:
 
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-[var(--color-text)] mb-2">Your letters</label>
+        <label class="block text-sm font-medium text-[var(--color-text)] mb-2" for="letters-input">Your letters</label>
         <input
           type="text"
           id="letters-input"
@@ -27,6 +24,7 @@ metadata:
         <div class="flex gap-2">
           <button
             type="button"
+            id="wildcard-1-btn"
             class="inline-flex items-center rounded bg-[var(--color-accent)]/10 px-3 py-1.5 text-sm text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 focus-ring"
             aria-pressed="false"
           >
@@ -34,6 +32,7 @@ metadata:
           </button>
           <button
             type="button"
+            id="wildcard-2-btn"
             class="inline-flex items-center rounded bg-[var(--color-accent)]/10 px-3 py-1.5 text-sm text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20 focus-ring"
             aria-pressed="false"
           >
@@ -49,8 +48,8 @@ metadata:
         id="search-btn"
         type="button"
         class="inline-flex items-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors"
-        disabled=true
-        aria-busy=false
+        disabled
+        aria-busy="false"
         data-state="ready"
       >
         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -88,32 +87,42 @@ metadata:
 </div>
 
 <script type="module">
-// Import the Web Worker handler
-import { createUnscramblerWorker } from '../lib/unscrambler-trie.ts';
-
 // Create worker
-const worker = new Worker(new URL('../lib/unscrambler-worker.ts', import.meta.url), {
+const worker = new Worker(new URL('../../lib/unscrambler-worker.ts', import.meta.url), {
   type: 'module'
 });
 
 // Initialize
 let wildcardCount = 0;
-const lettersInput = document.getElementById('letters-input') as HTMLInputElement;
-const searchBtn = document.getElementById('search-btn') as HTMLButtonElement;
-const resultsDiv = document.getElementById('results') as HTMLDivElement;
-const resultsList = document.getElementById('results-list') as HTMLDivElement;
-const scoringDiv = document.getElementById('scoring') as HTMLDivElement;
-const scoringList = document.getElementById('scoring-list') as HTMLDivElement;
-const resultCount = document.getElementById('result-count') as HTMLSpanElement;
-const sortBy = document.getElementById('sort-by') as HTMLSpanElement;
+const lettersInput = document.getElementById('letters-input');
+const searchBtn = document.getElementById('search-btn');
+const resultsDiv = document.getElementById('results');
+const resultsList = document.getElementById('results-list');
+const scoringDiv = document.getElementById('scoring');
+const scoringList = document.getElementById('scoring-list');
+const resultCount = document.getElementById('result-count');
+const sortBy = document.getElementById('sort-by');
+const wildcard1Btn = document.getElementById('wildcard-1-btn');
+const wildcard2Btn = document.getElementById('wildcard-2-btn');
+
+wildcard1Btn?.addEventListener('click', () => {
+  lettersInput.value += '?';
+  lettersInput.dispatchEvent(new Event('input'));
+});
+
+wildcard2Btn?.addEventListener('click', () => {
+  lettersInput.value += '??';
+  lettersInput.dispatchEvent(new Event('input'));
+});
 
 // Listen for worker messages
-worker.onmessage = (e: MessageEvent) => {
+worker.onmessage = (e) => {
   const { type, payload } = e.data;
 
   if (type === 'ready') {
-    // Worker initialized with dictionary
-    searchBtn.disabled = false;
+    if (lettersInput.value.trim()) {
+      searchBtn.disabled = false;
+    }
     searchBtn.setAttribute('data-state', 'ready');
     searchBtn.removeAttribute('aria-busy');
   }
@@ -124,21 +133,31 @@ worker.onmessage = (e: MessageEvent) => {
     sortBy.textContent = 'length';
 
     // Build results list
-    resultsList.innerHTML = scoredResults.map((r: { word: string; score: number }) => `
+    resultsList.innerHTML = scoredResults.map((r) => `
       <div class="flex items-center justify-between px-3 py-2 rounded hover:bg-[var(--color-bg-alt)] transition-colors">
         <span class="text-sm font-medium text-[var(--color-text)]">${r.word}</span>
-        <span class="text-xs text-[var(--color-accent)]">${r.score}</span>
+        <span class="text-xs text-[var(--color-accent)] font-semibold">${r.score} pts</span>
+      </div>
+    `).join('');
+
+    // Build scoring list
+    scoringList.innerHTML = scoredResults.slice(0, 20).map((r) => `
+      <div class="flex items-center justify-between px-3 py-1.5 rounded hover:bg-[var(--color-bg-alt)] transition-colors text-xs">
+        <span class="text-sm font-medium text-[var(--color-text)]">${r.word}</span>
+        <span class="text-[var(--color-text-secondary)]">${r.score} Scrabble points</span>
       </div>
     `).join('');
 
     resultsDiv.classList.remove('hidden');
     scoringDiv.classList.remove('hidden');
+    searchBtn.removeAttribute('aria-busy');
   }
 
   if (type === 'error') {
     console.error('Worker error:', payload);
     resultsDiv.classList.add('hidden');
     scoringDiv.classList.add('hidden');
+    searchBtn.removeAttribute('aria-busy');
   }
 };
 
@@ -168,54 +187,28 @@ async function handleSearch() {
 }
 
 // Event listeners
-lettersInput.addEventListener('input', (e) => {
-  const val = (e.target as HTMLInputElement).value;
-  searchBtn.disabled = val.length === 0;
+lettersInput?.addEventListener('input', (e) => {
+  const val = e.target.value;
+  searchBtn.disabled = val.trim().length === 0;
 });
 
-searchBtn.addEventListener('click', handleSearch);
+lettersInput?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    handleSearch();
+  }
+});
+
+searchBtn?.addEventListener('click', handleSearch);
 
 // Initialize worker on load
 worker.postMessage({ type: 'init', payload: { dictionary: [] } });
-
-// Provide global function for inline scoring (fallback)
-window.scoreWord = (word: string) => {
-  let score = 0;
-  const scrabble: Record<string, number> = {
-    a: 1, b: 3, c: 3, d: 2, e: 1, f: 4, g: 2, h: 4, i: 1,
-    j: 8, k: 5, l: 1, m: 3, n: 1, o: 1, p: 3, q: 10, r: 1,
-    s: 1, t: 1, u: 1, v: 4, w: 4, x: 8, y: 4, z: 10,
-  };
-  for (const c of word.toLowerCase()) {
-    score += scrabble[c] || 0;
-  }
-  return score;
-};
 </script>
 
 <style>
-  /* Middle-ground spacing — not too compact, not too spacious */
-  .unscrambler-tool {
-    @apply space-y-6;
-  }
-
-  /* Input styling — balanced touch target */
-  input[type="text"] {
-    @apply h-12 px-4 text-base;
-  }
-
-  /* Buttons */
-  button {
-    @apply transition-all duration-150;
-  }
-
   /* Results list */
   .results-list > div {
-    @apply flex items-center justify-between px-3 py-1.5 rounded hover:bg-[var(--color-bg-alt)] transition-colors text-sm;
-  }
-
-  /* Scoring list */
-  .scoring-list > div {
-    @apply flex items-center justify-between px-3 py-1.5 rounded hover:bg-[var(--color-bg-alt)] transition-colors text-xs;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>

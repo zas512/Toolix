@@ -1,8 +1,5 @@
 ---
-name: sleep-calculator
-description: Circadian rhythm sleep calculator component
-metadata:
-  type: component
+// Sleep calculator component
 ---
 
 <div class="space-y-8">
@@ -103,24 +100,23 @@ metadata:
 <script type="module">
 // Sleep cycle constants
 const CYCLE_LENGTH = 90; // minutes
-const LATENCY = 14; // default minutes to fall asleep
 const CYCLES = [4, 4.5, 5, 5.5, 6]; // typical cycle counts
 
 // Parse time helper
-function parseTime(hhmm: string): number {
+function parseTime(hhmm) {
   const [h, m] = hhmm.split(':').map(Number);
   return h * 60 + m;
 }
 
-function formatTime(minutes: number): string {
+function formatTime(minutes) {
   const h = Math.floor(((minutes % 1440) + 1440) % 1440 / 60);
   const m = Math.floor(((minutes % 1440) + 1440) % 60);
   return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
 }
 
 // Calculate bedtimes for a target wake time
-function calcBedtimes(wakeTime: number, latency: number): number[] {
-  const times: number[] = [];
+function calcBedtimes(wakeTime, latency) {
+  const times = [];
   for (const cycles of CYCLES) {
     const totalSleep = cycles * CYCLE_LENGTH;
     const bedtime = wakeTime - totalSleep - latency;
@@ -130,8 +126,8 @@ function calcBedtimes(wakeTime: number, latency: number): number[] {
 }
 
 // Calculate wake times for a target bedtime
-function calcWakeTimes(bedtime: number, latency: number): number[] {
-  const times: number[] = [];
+function calcWakeTimes(bedtime, latency) {
+  const times = [];
   for (const cycles of CYCLES) {
     const totalSleep = cycles * CYCLE_LENGTH;
     const wake = bedtime + totalSleep + latency;
@@ -141,7 +137,7 @@ function calcWakeTimes(bedtime: number, latency: number): number[] {
 }
 
 // Create sleep wave SVG path
-function createWavePath(width: number, height: number): string {
+function createWavePath(width, height) {
   const points = [];
   const amplitude = height * 0.35;
   const centerY = height / 2;
@@ -150,7 +146,6 @@ function createWavePath(width: number, height: number): string {
   for (let i = 0; i <= width; i += 2) {
     const x = i;
     const cycle = (x / width) * cycles * Math.PI * 2;
-    // Sleep wave: gradual descent, then REM peak
     const y = centerY + Math.sin(cycle) * amplitude * (0.5 + 0.5 * Math.sin(cycle * 0.5));
     points.push(`${x},${y}`);
   }
@@ -159,14 +154,14 @@ function createWavePath(width: number, height: number): string {
 
 // Event handlers
 document.getElementById('calc-bedtime')?.addEventListener('click', () => {
-  const wakeEl = document.getElementById('wake-time') as HTMLInputElement;
-  const latencyEl = document.getElementById('sleep-latency') as HTMLSelectElement;
+  const wakeEl = document.getElementById('wake-time');
+  const latencyEl = document.getElementById('sleep-latency');
   const wakeTime = parseTime(wakeEl.value);
   const latency = parseInt(latencyEl.value);
 
   const bedtimes = calcBedtimes(wakeTime, latency);
-  const resultsDiv = document.getElementById('results') as HTMLDivElement;
-  const slots = document.getElementById('time-slots') as HTMLDivElement;
+  const resultsDiv = document.getElementById('results');
+  const slots = document.getElementById('time-slots');
 
   slots.innerHTML = bedtimes.map((bt, i) => `
     <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] transition-colors">
@@ -176,7 +171,7 @@ document.getElementById('calc-bedtime')?.addEventListener('click', () => {
       </div>
       <div class="text-right">
         <p class="text-sm font-medium">${formatTime(bt)}</p>
-        <p class="text-xs text-[var(--color-accent)]">bedtime</p>
+        <p class="text-xs text-[var(--color-accent)] font-semibold">bedtime</p>
       </div>
     </div>
   `).join('');
@@ -184,21 +179,21 @@ document.getElementById('calc-bedtime')?.addEventListener('click', () => {
   resultsDiv.classList.remove('hidden');
 
   // Update wave visualization
-  const svg = document.getElementById('sleep-wave') as SVGSVGElement;
-  const path = document.getElementById('wave-path') as SVGPathElement;
+  const svg = document.getElementById('sleep-wave');
+  const path = document.getElementById('wave-path');
   if (svg && path) {
     path.setAttribute('d', createWavePath(800, 200));
   }
 });
 
 document.getElementById('calc-waketime')?.addEventListener('click', () => {
-  const wakeEl = document.getElementById('wake-time') as HTMLInputElement;
+  const wakeEl = document.getElementById('wake-time');
   const bedtime = parseTime(wakeEl.value);
-  const latency = parseInt((document.getElementById('sleep-latency') as HTMLSelectElement).value);
+  const latency = parseInt(document.getElementById('sleep-latency').value);
 
   const wakeTimes = calcWakeTimes(bedtime, latency);
-  const resultsDiv = document.getElementById('results') as HTMLDivElement;
-  const slots = document.getElementById('time-slots') as HTMLDivElement;
+  const resultsDiv = document.getElementById('results');
+  const slots = document.getElementById('time-slots');
 
   slots.innerHTML = wakeTimes.map((wt, i) => `
     <div class="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] transition-colors">
@@ -208,7 +203,7 @@ document.getElementById('calc-waketime')?.addEventListener('click', () => {
       </div>
       <div class="text-right">
         <p class="text-sm font-medium">${formatTime(wt)}</p>
-        <p class="text-xs text-[var(--color-accent)]">wake time</p>
+        <p class="text-xs text-[var(--color-accent)] font-semibold">wake time</p>
       </div>
     </div>
   `).join('');
@@ -216,20 +211,3 @@ document.getElementById('calc-waketime')?.addEventListener('click', () => {
   resultsDiv.classList.remove('hidden');
 });
 </script>
-
-<style>
-  /* Middle-ground spacing */
-  .sleep-calc {
-    @apply space-y-6;
-  }
-
-  /* Input styling */
-  input[type="time"], select {
-    @apply h-12 px-4 text-base;
-  }
-
-  /* Time slot cards */
-  #time-slots > div {
-    @apply flex items-center justify-between p-3 rounded-lg;
-  }
-</style>

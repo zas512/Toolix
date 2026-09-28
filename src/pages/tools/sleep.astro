@@ -1,7 +1,5 @@
 ---
-description: "Circadian rhythm and sleep cycle calculator page"
-metadata:
-  type: page
+import SleepCalculator from '../../components/tools/SleepCalculator.astro';
 ---
 
 <!doctype html>
@@ -28,7 +26,7 @@ metadata:
 
       {/* Tool Interface */}
       <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10">
-        <SleepCalculator client:visible />
+        <SleepCalculator />
       </div>
     </section>
   </main>

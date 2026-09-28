@@ -1,10 +1,6 @@
 ---
 import ImageConverterTool from '../../components/tools/ImageConverterTool.astro';
 ---
-description: "HEIC/WebP transcoder with batch processing"
-metadata:
-  type: page
----
 
 <!doctype html>
 <html lang="en">
@@ -29,7 +25,7 @@ metadata:
       </p>
 
       <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10 max-w-xl">
-        <ImageConverterTool client:visible />
+        <ImageConverterTool />
       </div>
     </section>
   </main>

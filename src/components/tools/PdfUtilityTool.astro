@@ -1,8 +1,5 @@
 ---
-name: pdf-utility-tool
-description: PDF merge, split, compress component with Web Worker
-metadata:
-  type: component
+// PDF merge, split, compress component
 ---
 
 <div class="space-y-8">
@@ -20,7 +17,7 @@ metadata:
       <button
         type="button"
         id="tab-merge"
-        class="flex-1 px-4 py-3 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text)] border-b-2 border-transparent hover:border-[var(--color-accent)] transition-colors"
+        class="flex-1 px-4 py-3 text-sm font-medium text-[var(--color-text)] border-b-2 border-[var(--color-accent)] transition-colors"
         aria-selected="true"
         data-tab="merge"
       >
@@ -49,13 +46,64 @@ metadata:
     {/* Tab panels */}
     <div class="pt-6">
       <div id="tab-merge-panel" class="space-y-4">
-        <MergePdfForm client:visible />
+        <div class="border-2 border-dashed border-[var(--color-border)] rounded-xl p-8 text-center hover:border-[var(--color-accent)] transition-colors cursor-pointer" id="merge-dropzone">
+          <input type="file" id="merge-file-input" accept=".pdf" multiple class="hidden" />
+          <label for="merge-file-input" class="cursor-pointer block">
+            <svg class="h-8 w-8 mx-auto text-[var(--color-text-secondary)] mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <p class="text-sm font-medium text-[var(--color-text)]">Choose PDF files to merge</p>
+            <p class="text-xs text-[var(--color-text-secondary)] mt-1">Select 2 or more PDFs</p>
+          </label>
+        </div>
+        <div id="merge-file-list" class="text-xs text-[var(--color-text-secondary)]"></div>
+        <button type="button" id="btn-merge-action" class="inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors w-full sm:w-auto" disabled>
+          Merge PDFs
+        </button>
       </div>
+
       <div id="tab-split-panel" class="hidden space-y-4">
-        <SplitPdfForm client:visible />
+        <div class="border-2 border-dashed border-[var(--color-border)] rounded-xl p-8 text-center hover:border-[var(--color-accent)] transition-colors cursor-pointer" id="split-dropzone">
+          <input type="file" id="split-file-input" accept=".pdf" class="hidden" />
+          <label for="split-file-input" class="cursor-pointer block">
+            <svg class="h-8 w-8 mx-auto text-[var(--color-text-secondary)] mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-sm font-medium text-[var(--color-text)]">Choose a PDF file to split</p>
+            <p class="text-xs text-[var(--color-text-secondary)] mt-1" id="split-file-name">Extract specific pages</p>
+          </label>
+        </div>
+        <div>
+          <label for="split-pages" class="block text-sm font-medium mb-1">Page numbers or ranges (e.g. 1-3, 5)</label>
+          <input type="text" id="split-pages" placeholder="1-3, 5" class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] px-4 py-2.5 text-sm" />
+        </div>
+        <button type="button" id="btn-split-action" class="inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors w-full sm:w-auto" disabled>
+          Split PDF
+        </button>
       </div>
+
       <div id="tab-compress-panel" class="hidden space-y-4">
-        <CompressPdfForm client:visible />
+        <div class="border-2 border-dashed border-[var(--color-border)] rounded-xl p-8 text-center hover:border-[var(--color-accent)] transition-colors cursor-pointer" id="compress-dropzone">
+          <input type="file" id="compress-file-input" accept=".pdf" class="hidden" />
+          <label for="compress-file-input" class="cursor-pointer block">
+            <svg class="h-8 w-8 mx-auto text-[var(--color-text-secondary)] mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p class="text-sm font-medium text-[var(--color-text)]">Choose a PDF file to compress</p>
+            <p class="text-xs text-[var(--color-text-secondary)] mt-1" id="compress-file-name">Optimize PDF size</p>
+          </label>
+        </div>
+        <div>
+          <label for="compress-level" class="block text-sm font-medium mb-1">Compression Level</label>
+          <select id="compress-level" class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-alt)] px-4 py-2.5 text-sm">
+            <option value="low">Basic compression (highest quality)</option>
+            <option value="medium" selected>Standard compression (recommended)</option>
+            <option value="high">Strong compression (smaller size)</option>
+          </select>
+        </div>
+        <button type="button" id="btn-compress-action" class="inline-flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white px-6 py-3 font-medium shadow-lg shadow-[var(--color-accent)]/20 hover:bg-blue-700 transition-colors w-full sm:w-auto" disabled>
+          Compress PDF
+        </button>
       </div>
     </div>
   </div>
@@ -83,8 +131,6 @@ metadata:
 </div>
 
 <script type="module">
-import { createPdfWorker } from '../../lib/pdf-worker.ts';
-
 let worker = null;
 let currentTab = 'merge';
 const mergePanel = document.getElementById('tab-merge-panel');
@@ -96,6 +142,20 @@ const compressBtn = document.getElementById('tab-compress');
 const resultsDiv = document.getElementById('results');
 const resultContent = document.getElementById('result-content');
 const downloadBtn = document.getElementById('download-btn');
+
+const mergeInput = document.getElementById('merge-file-input');
+const splitInput = document.getElementById('split-file-input');
+const compressInput = document.getElementById('compress-file-input');
+const btnMergeAction = document.getElementById('btn-merge-action');
+const btnSplitAction = document.getElementById('btn-split-action');
+const btnCompressAction = document.getElementById('btn-compress-action');
+const mergeFileList = document.getElementById('merge-file-list');
+const splitFileName = document.getElementById('split-file-name');
+const compressFileName = document.getElementById('compress-file-name');
+
+let mergeFiles = [];
+let splitFile = null;
+let compressFile = null;
 
 // Initialize worker
 function initWorker() {
@@ -143,12 +203,6 @@ function handleWorkerMessage(e) {
       </div>
     `;
 
-    // Actually set up the download link
-    const downloadLink = resultContent.querySelector('a[download="processed.pdf"]');
-    if (downloadLink) {
-      downloadLink.href = url;
-    }
-
     const actualDownloadBtn = resultContent.querySelector('#download-btn-actual');
     if (actualDownloadBtn) {
       actualDownloadBtn.onclick = () => {
@@ -176,6 +230,46 @@ function handleWorkerMessage(e) {
     downloadBtn.disabled = true;
   }
 }
+
+// File selection listeners
+mergeInput?.addEventListener('change', () => {
+  if (mergeInput.files) {
+    mergeFiles = Array.from(mergeInput.files);
+    mergeFileList.textContent = mergeFiles.map(f => f.name).join(', ');
+    btnMergeAction.disabled = mergeFiles.length < 2;
+  }
+});
+
+splitInput?.addEventListener('change', () => {
+  if (splitInput.files && splitInput.files[0]) {
+    splitFile = splitInput.files[0];
+    splitFileName.textContent = splitFile.name;
+    btnSplitAction.disabled = false;
+  }
+});
+
+compressInput?.addEventListener('change', () => {
+  if (compressInput.files && compressInput.files[0]) {
+    compressFile = compressInput.files[0];
+    compressFileName.textContent = compressFile.name;
+    btnCompressAction.disabled = false;
+  }
+});
+
+btnMergeAction?.addEventListener('click', () => {
+  initWorker();
+  worker.postMessage({ type: 'merge', payload: { count: mergeFiles.length } });
+});
+
+btnSplitAction?.addEventListener('click', () => {
+  initWorker();
+  worker.postMessage({ type: 'merge', payload: { file: splitFile?.name } });
+});
+
+btnCompressAction?.addEventListener('click', () => {
+  initWorker();
+  worker.postMessage({ type: 'merge', payload: { file: compressFile?.name } });
+});
 
 // Tab switching
 mergeBtn.addEventListener('click', () => {
@@ -234,22 +328,8 @@ initWorker();
 </script>
 
 <style>
-  /* Professional, middle-ground spacing */
-  .pdf-utility-tool {
-    @apply space-y-6;
-  }
-
   /* Tab button styling */
   button[aria-selected="true"] {
-    @apply border-b-2 border-[var(--color-accent)] text-[var(--color-text)] font-semibold;
-  }
-
-  button[aria-selected="false"] {
-    @apply border-b-2 border-transparent text-[var(--color-text-secondary)];
-  }
-
-  /* Input styling */
-  input[type="file"], input[type="range"] {
-    @apply w-full px-4 py-3;
+    font-weight: 600;
   }
 </style>

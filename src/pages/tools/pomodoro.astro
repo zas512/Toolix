@@ -1,7 +1,5 @@
 ---
-description: "Pomodoro timer with web worker tick thread"
-metadata:
-  type: page
+import PomodoroTimerTool from '../../components/tools/PomodoroTimerTool.astro';
 ---
 
 <!doctype html>
@@ -23,7 +21,7 @@ metadata:
       </p>
 
       <div class="bg-[var(--color-bg-alt)] rounded-2xl p-8 sm:p-10 max-w-xl">
-        <PomodoroTimerTool client:visible />
+        <PomodoroTimerTool />
       </div>
     </section>
   </main>
