@@ -1,7 +1,4 @@
 ---
-name: word-unscrambler-slug
-description: "Programmatic SEO route for word unscrambler variants"
----
 export async function getStaticPaths() {
   return [
     { params: { slug: '5-letter-words' } },
@@ -12,11 +9,11 @@ export async function getStaticPaths() {
   ];
 }
 ---
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Word Unscrambler — {slug}</title>
   <meta name="description" content="Find words for '{slug}' with our client-side Trie unscrambler. Zero uploads." />
   <link rel="canonical" href="https://toolix.dev/word-unscrambler/{slug}" />

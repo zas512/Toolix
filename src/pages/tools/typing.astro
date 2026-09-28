@@ -1,0 +1,114 @@
+---
+name: typing-tool
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Typing Practice — TypeForge Style Tool</title>
+  <meta name="description" content="Practice typing with realistic keyboard sounds, live WPM tracking, and 6 themes. Client-side only." />
+  <link rel="canonical" href="https://toolix.dev/tools/typing" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    @theme {
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      --color-type-dark: #0b0f14;
+      --color-type-bg: #faf8f5;
+      --color-type-key: #1a2e1a;
+    }
+    .key-pressed { box-shadow: inset 0 2px 6px rgba(0,0,0,.25); transform: translateY(2px); background: #00E676 !important; color: #0b0f14 !important; }
+  </style>
+</head>
+<body class="bg-[#F5F8F0] text-[#1A2E1A] font-[family-name:'Space_Grotesk']">
+  <main class="mx-auto max-w-5xl px-6 py-12 sm:px-12">
+    <h1 class="text-4xl font-bold tracking-tight mb-2 font-[family-name:'Space_Grotesk']">Typing Practice</h1>
+    <p class="text-lg text-[#1A2E1A]/70 mb-8">Realistic per-key mechanical sounds · live WPM · 6 themes · virtual keyboard.</p>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <section class="lg:col-span-2 bg-[#1A2E1A] rounded-3xl p-8 sm:p-10 shadow-xl shadow-[#1A2E1A]/10 relative overflow-hidden">
+        <div class="absolute top-0 right-0 px-4 py-2 bg-[#00E676]/10 text-[#00E676] text-xs font-mono rounded-bl-xl">TYPEFORGE STYLE</div>
+        <div id="typing-area" class="font-mono text-2xl sm:text-3xl leading-relaxed tracking-tight text-[#EAE6DC] mb-8 min-h-[120px]" aria-label="Typing test text">The quick brown fox jumps over the lazy dog.</div>
+        <input id="typing-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="w-full bg-[#0b0f14] text-[#EAE6DC] font-mono text-xl px-5 py-4 rounded-xl border border-[#EAE6DC]/10 focus:outline-none focus:border-[#00E676] transition" placeholder="Start typing..." oninput="handleType(this.value)" />
+      </section>
+
+      <aside class="space-y-6">
+        <div class="bg-[#E8EFE6] rounded-2xl p-6 border border-[#00E676]/10">
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-[#1A2E1A]/50 mb-3">Results</h3>
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div><div id="wpm" class="text-2xl font-bold text-[#00E676]">0</div><div class="text-xs text-[#1A2E1A]/50">WPM</div></div>
+            <div><div id="acc" class="text-2xl font-bold">100%</div><div class="text-xs text-[#1A2E1A]/50">Accuracy</div></div>
+            <div><div id="time" class="text-2xl font-bold">0s</div><div class="text-xs text-[#1A2E1A]/50">Time</div></div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-[#1A2E1A]/5">
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-[#1A2E1A]/50 mb-3">Theme</h3>
+          <div class="flex flex-wrap gap-2" id="theme-picker">
+            <button onclick="setTheme('classic')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#1A2E1A] text-white shadow">Classic</button>
+            <button onclick="setTheme('mint')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#E8EFE6] border border-[#00E676]/20 text-[#1A2E1A]">Mint</button>
+            <button onclick="setTheme('royal')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#E8EFE6] border border-[#00E676]/20 text-[#1A2E1A]">Royal</button>
+            <button onclick="setTheme('dolch')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#E8EFE6] border border-[#00E676]/20 text-[#1A2E1A]">Dolch</button>
+            <button onclick="setTheme('sand')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#E8EFE6] border border-[#00E676]/20 text-[#1A2E1A]">Sand</button>
+            <button onclick="setTheme('scarlet')" class="px-3 py-1.5 rounded-full text-xs font-medium bg-[#E8EFE6] border border-[#00E676]/20 text-[#1A2E1A]">Scarlet</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="mt-12 bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-[#1A2E1A]/5">
+      <h2 class="text-2xl font-bold mb-6">Virtual Keyboard</h2>
+      <div id="kb" class="flex flex-col items-center gap-1.5 select-none"></div>
+    </section>
+  </main>
+
+  <script>
+  const ROWS = ["qwertyuiop","asdfghjkl","zxcvbnm"];
+  const KEY_MAP = { Shift:1, Backspace:1, Enter:1, Space:1 };
+  const THEME = { classic:{bg:"#0b0f14",key:"#1a2e1a",text:"#EAE6DC"}, mint:{bg:"#F0FDF4",key:"#10B981",text:"#064E3B"}, royal:{bg:"#F5F3FF",key:"#6366F1",text:"#312E81"}, dolch:{bg:"#FFF7ED",key:"#F97316",text:"#7C2D12"}, sand:{bg:"#FAF8F5",key:"#D97706",text:"#78350F"}, scarlet:{bg:"#FEF2F2",key:"#E11D48",text:"#881337"} };
+  let currentTheme = 'classic';
+  let startTime = null; let typed = 0; let correct = 0;
+
+  function buildKB() {
+    const kb = document.getElementById('kb'); kb.innerHTML = '';
+    ROWS.forEach((row,i) => {
+      const div = document.createElement('div'); div.className = 'flex gap-1.5';
+      row.split('').forEach(ch => {
+        const k = document.createElement('kbd');
+        k.textContent = ch.toUpperCase();
+        k.className = `w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center font-mono text-sm font-bold shadow-md transition bg-[#0b0f14] text-[#EAE6DC]`;
+        k.id = 'k-'+ch;
+        div.appendChild(k);
+      });
+      kb.appendChild(div);
+    });
+  }
+  buildKB();
+
+  function playKeySound() {
+    try { const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(880, ctx.currentTime); o.connect(g); g.connect(ctx.destination); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08); o.start(); o.stop(ctx.currentTime+0.08); } catch(e){}
+  }
+
+  function handleType(val) {
+    if (!startTime) startTime = Date.now();
+    if (val.length > typed) { typed = val.length; correct = Math.min(val.length, document.getElementById('typing-area').textContent.trim().split('').length); playKeySound(); }
+    const last = val.slice(-1).toLowerCase();
+    const k = document.getElementById('k-'+last);
+    if (k) { k.classList.add('key-pressed'); setTimeout(()=>k.classList.remove('key-pressed'), 120); }
+    document.getElementById('wpm').textContent = Math.round(((typed/5)/((Date.now()-startTime)/60000)) || 0);
+    document.getElementById('acc').textContent = typed ? Math.round((correct/typed)*100)+'%' : '100%';
+    document.getElementById('time').textContent = Math.round((Date.now()-startTime)/1000)+'s';
+  }
+
+  function setTheme(name) {
+    currentTheme = name; const t = THEME[name];
+    document.body.style.background = t.bg; document.body.style.color = t.text;
+    document.querySelectorAll('#kb kbd').forEach(k => { k.style.background = t.key; k.style.color = t.text; });
+    document.querySelectorAll('.bg-\\[\\#1A2E1A\\]').forEach(el => { el.style.background = t.key; });
+    document.querySelectorAll('#theme-picker button').forEach(b => { b.classList.remove('bg-[#1A2E1A]','text-white'); b.classList.add('bg-[#E8EFE6]'); });
+    const active = document.querySelector('#theme-picker button[onclick*="'+name+'"]'); if(active){ active.classList.remove('bg-[#E8EFE6]'); active.classList.add('bg-[#1A2E1A]','text-white'); }
+  }
+  </script>
+</body>
+</html>
