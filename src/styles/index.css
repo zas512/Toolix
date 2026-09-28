@@ -1,68 +1,53 @@
 @import "tailwindcss";
-@import "@fontsource/geist-sans/400.css";
-@import "@fontsource/geist-sans/500.css";
-@import "@fontsource/geist-sans/600.css";
-@import "@fontsource/geist-sans/700.css";
+
+/* Space Grotesk for headings — geometric, editorial, not AI-default */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: local('Space Grotesk'), local('SpaceGrotesk-Regular'),
+    url('/fonts/space-grotesk/SpaceGrotesk-Regular.woff2') format('woff2'),
+    url('/fonts/space-grotesk/SpaceGrotesk-Regular.woff') format('woff');
+}
+
+/* DM Sans for body — warm, humanist, readable */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: local('DM Sans'), local('DMSans-Regular'),
+    url('/fonts/dm-sans/DMSans-Regular.woff2') format('woff2'),
+    url('/fonts/dm-sans/DMSans-Regular.woff') format('woff');
+}
+
+/* Heading combo: Space Grotesk (geometric, editorial) */
+/* Body combo: DM Sans (humanist, warm) */
 
 @theme inline {
-  --tw-font-family-sans: "Geist Sans", "Inter", sans-serif;
-  --tw-font-family-mono: "ui-monospace", "monospace";
+  --font-family-sans: 'DM Sans', 'DM-Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-family-display: 'Space Grotesk', 'SpaceGrotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'Fira Code', monospace;
 
-  /* Light mode (default) */
-  --color-bg: #F8F7F5;
-  --color-bg-alt: #F0EFE9;
-  --color-text: #0F1115;
-  --color-text-secondary: #7A7670;
-  --color-accent: #2563EB;
-  --color-border: #D9D6CE;
-
-  /* Dark mode variables — applied via .dark class */
-  --color-bg-dark: #121214;
-  --color-bg-alt-dark: #1A1A1D;
-  --color-text-dark: #F4F3F0;
-  --color-text-secondary-dark: #9A9690;
-  --color-border-dark: #2E2E35;
+  /* Emerald / Acid Green system — kept from previous request */
+  --color-bg: #F5F8F0;
+  --color-bg-alt: #E7EFE4;
+  --color-text: #0A1A08;
+  --color-text-secondary: #3A5A2E;
+  --color-accent: #00E676;
+  --color-border: #C5D5BE;
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-    font-size: 16px;
-  }
-
+  html { scroll-behavior: smooth; font-size: 16px; }
   body {
-    @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans;
+    @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased;
     transition: background-color 150ms ease-out, color 150ms ease-out;
   }
+  button, [role="button"] { @apply transition-all duration-150 ease-out; }
+  * { -webkit-tap-highlight-color: transparent; }
 
-  .dark body {
-    @apply bg-[var(--color-bg-dark)] text-[var(--color-text-dark)];
-  }
-
-  /* 150ms ease-out for interactive states (Impeccable standard) */
-  button, [role="button"] {
-    transition: background-color 150ms ease-out, color 150ms ease-out,
-      border-color 150ms ease-out, transform 150ms ease-out;
-  }
-
-  /* Prevent unwantedtap highlight on mobile */
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
-}
-
-@layer components {
-  /* Layout-stable ad placeholder (0 CLS) */
-  .ad-placeholder {
-    @apply bg-slate-100 dark:bg-slate-800 rounded flex items-center justify-center min-h-[90px] sm:min-h-[50px];
-  }
-
-  .ad-placeholder-label {
-    @apply text-xs text-slate-400 uppercase tracking-wider;
-  }
-
-  /* Focus ring — subtle and consistent */
-  .focus-ring {
-    @apply focus:outline-2 focus:outline-offset-2 focus:outline-[var(--color-accent)];
-  }
+  /* Editorial heading style — Space Grotesk tight tracking */
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.03em; }
 }
